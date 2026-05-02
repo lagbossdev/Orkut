@@ -24,17 +24,28 @@
         textarea { width: 100%; border: none; font-size: 16px; outline: none; margin-bottom: 10px; resize: none; font-family: inherit; }
         
         .btn-post { background: var(--orkut-blue); color: #fff; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; float: right; font-weight: bold; }
-        .btn-post:disabled { background: #ccc; cursor: not-allowed; }
-        .btn-logout { background: none; border: 1px solid #ccc; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; }
-
-        .post-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; padding: 0 0 15px 0; overflow: hidden; }
-        .post-header { display: flex; align-items: center; gap: 10px; padding: 15px; font-weight: 600; color: var(--orkut-blue); }
-        .post-content { padding: 0 15px 10px 15px; font-size: 15px; line-height: 1.4; }
-        .user-pic { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
-        .post-img { width: 100%; display: block; }
+        .post-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 25px; overflow: hidden; position: relative; }
         
+        .post-header { display: flex; align-items: center; justify-content: space-between; padding: 12px; }
+        .user-info { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--orkut-blue); }
+        .user-pic { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+        
+        .post-img { width: 100%; display: block; background: #f0f0f0; }
+        
+        .post-actions { padding: 10px 15px; display: flex; gap: 15px; font-size: 20px; }
+        .action-btn { cursor: pointer; transition: transform 0.1s; }
+        .action-btn:hover { transform: scale(1.1); }
+
+        .post-content { padding: 0 15px 15px 15px; font-size: 14px; }
+        
+        /* Menu 3 pontinhos */
+        .options-menu { cursor: pointer; padding: 5px; font-weight: bold; }
+        .dropdown { position: absolute; right: 10px; top: 40px; background: white; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 10; display: none; }
+        .dropdown button { display: block; width: 100%; padding: 10px; border: none; background: none; cursor: pointer; text-align: left; font-size: 13px; }
+        .dropdown button:hover { background: #f5f5f5; }
+
         .hidden { display: none !important; }
-        #preview-img { width: 100%; border-radius: 8px; margin-bottom: 10px; object-fit: cover; max-height: 300px; }
+        #preview-img { width: 100%; border-radius: 8px; margin-bottom: 10px; max-height: 300px; object-fit: cover; }
     </style>
 </head>
 <body>
@@ -43,7 +54,7 @@
     <div class="nav-content">
         <span style="font-size: 24px; font-weight: bold; color: var(--orkut-pink);">orkut</span>
         <div id="user-nav" class="hidden" style="display: flex; align-items: center; gap: 10px;">
-            <button class="btn-logout" onclick="logout()">Sair</button>
+            <button onclick="location.reload()" style="background:none; border:none; cursor:pointer">🏠</button>
             <img id="nav-avatar" class="user-pic" src="">
         </div>
     </div>
@@ -52,42 +63,30 @@
 <main>
     <div id="login-screen">
         <h2 style="color: var(--orkut-blue);">Entrar no orkut</h2>
-        <p style="color: #666;">Conecte-se para ver as postagens reais</p><br>
-        <div id="g_id_onload"
-             data-client_id="8393724573-kdnas52bjnhjvtkhahtqchm1p000b0i4.apps.googleusercontent.com"
-             data-callback="handleLogin"
-             data-auto_prompt="false">
-        </div>
+        <div id="g_id_onload" data-client_id="8393724573-kdnas52bjnhjvtkhahtqchm1p000b0i4.apps.googleusercontent.com" data-callback="handleLogin" data-auto_prompt="false"></div>
         <div class="g_id_signin" data-type="standard" data-shape="pill"></div>
     </div>
 
     <div id="app-content" class="hidden">
         <div class="post-box">
-            <textarea id="post-input" placeholder="No que você está pensando?" rows="3"></textarea>
-            
+            <textarea id="post-input" placeholder="No que você está pensando?" rows="2"></textarea>
             <img id="preview-img" class="hidden">
-
             <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 10px;">
-                <label for="file-input" style="cursor: pointer; color: var(--orkut-blue); font-weight: bold;">
-                    📷 <span style="font-size: 14px;">Adicionar Foto</span>
-                </label>
+                <label for="file-input" style="cursor: pointer; color: var(--orkut-blue);">📷 Foto</label>
                 <input type="file" id="file-input" accept="image/*" class="hidden" onchange="mostrarPreview(this)">
-                
                 <button id="btn-publicar" class="btn-post" onclick="enviarPost()">Publicar</button>
             </div>
-            <div style="clear:both"></div>
         </div>
         <div id="feed"></div>
     </div>
 </main>
 
 <script>
-    // CONFIGURAÇÃO FIREBASE
     const firebaseConfig = {
         apiKey: "AIzaSyDwtEYsXqq5Ed131USZ9tZhFqaJvD0480M",
         authDomain: "fir-75fa8.firebaseapp.com",
         projectId: "fir-75fa8",
-        storageBucket: "fir-75fa8.appspot.com", // Ajustado para o padrão
+        storageBucket: "fir-75fa8.appspot.com",
         messagingSenderId: "390149251555",
         appId: "1:390149251555:web:6471327ebf6c42cced00d6"
     };
@@ -97,41 +96,23 @@
     const storage = firebase.storage();
     let userAtual = null;
 
-    window.onload = function () {
-        google.accounts.id.disableAutoSelect();
-    };
-
     function handleLogin(response) {
-        try {
-            const payload = JSON.parse(atob(response.credential.split('.')[1]));
-            userAtual = { name: payload.name, photo: payload.picture, email: payload.email };
+        const payload = JSON.parse(atob(response.credential.split('.')[1]));
+        userAtual = { name: payload.name, photo: payload.picture, email: payload.email, id: payload.sub };
 
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('app-content').classList.remove('hidden');
-            document.getElementById('user-nav').classList.remove('hidden');
-            document.getElementById('nav-avatar').src = payload.picture;
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('app-content').classList.remove('hidden');
+        document.getElementById('user-nav').classList.remove('hidden');
+        document.getElementById('nav-avatar').src = payload.picture;
 
-            carregarPosts();
-        } catch (e) {
-            console.error("Erro ao processar login:", e);
-            logout();
-        }
-    }
-
-    function logout() {
-        google.accounts.id.disableAutoSelect();
-        userAtual = null;
-        location.reload();
+        carregarPosts();
     }
 
     function mostrarPreview(input) {
         const preview = document.getElementById('preview-img');
         if (input.files && input.files[0]) {
             const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.src = e.target.result;
-                preview.classList.remove('hidden');
-            }
+            reader.onload = e => { preview.src = e.target.result; preview.classList.remove('hidden'); }
             reader.readAsDataURL(input.files[0]);
         }
     }
@@ -139,43 +120,53 @@
     async function enviarPost() {
         const txt = document.getElementById('post-input').value;
         const file = document.getElementById('file-input').files[0];
-        const btn = document.getElementById('btn-publicar');
-
         if ((!txt.trim() && !file) || !userAtual) return;
 
+        const btn = document.getElementById('btn-publicar');
         btn.disabled = true;
-        btn.innerText = "Enviando...";
 
         let urlImagem = "";
-
         try {
             if (file) {
-                const nomeArquivo = `posts/${Date.now()}_${userAtual.name.replace(/\s/g, '_')}`;
-                const ref = storage.ref().child(nomeArquivo);
+                // ORGANIZAÇÃO EM PASTAS: posts/ID_USUARIO/timestamp_nome
+                const ref = storage.ref().child(`posts/${userAtual.id}/${Date.now()}_${file.name}`);
                 await ref.put(file);
                 urlImagem = await ref.getDownloadURL();
             }
 
             await db.collection("posts").add({
+                uid: userAtual.id,
+                email: userAtual.email,
                 nome: userAtual.name,
                 foto: userAtual.photo,
                 texto: txt,
                 imagemPost: urlImagem,
-                data: firebase.firestore.FieldValue.serverTimestamp()
+                data: firebase.firestore.FieldValue.serverTimestamp(),
+                likes: 0
             });
 
-            // Resetar formulário
             document.getElementById('post-input').value = "";
-            document.getElementById('file-input').value = "";
             document.getElementById('preview-img').classList.add('hidden');
-            
-        } catch (err) {
-            console.error(err);
-            alert("Erro ao publicar! Verifique as regras do Storage/Firestore.");
-        } finally {
-            btn.disabled = false;
-            btn.innerText = "Publicar";
-        }
+            document.getElementById('file-input').value = "";
+        } catch (e) { alert("Erro ao postar"); }
+        btn.disabled = false;
+    }
+
+    function toggleMenu(id) {
+        const menu = document.getElementById(`menu-${id}`);
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    }
+
+    async function deletarPost(id, imgUrl) {
+        if (!confirm("Excluir esta postagem?")) return;
+        try {
+            await db.collection("posts").doc(id).delete();
+            if (imgUrl) { await storage.refFromURL(imgUrl).delete(); }
+        } catch (e) { alert("Erro ao deletar"); }
+    }
+
+    function denunciarPost(id) {
+        alert("Postagem ID: " + id + " foi enviada para análise da moderação.");
     }
 
     function carregarPosts() {
@@ -184,15 +175,35 @@
             feed.innerHTML = "";
             snapshot.forEach(doc => {
                 const p = doc.data();
-                const imagemHTML = p.imagemPost ? `<img src="${p.imagemPost}" class="post-img">` : "";
-                
+                const id = doc.id;
+                const isOwner = userAtual && p.email === userAtual.email;
+
                 feed.innerHTML += `
                     <div class="post-card">
                         <div class="post-header">
-                            <img src="${p.foto}" class="user-pic">
-                            <span>${p.nome}</span>
+                            <div class="user-info">
+                                <img src="${p.foto}" class="user-pic">
+                                <span>${p.nome}</span>
+                            </div>
+                            <div style="position:relative">
+                                <div class="options-menu" onclick="toggleMenu('${id}')">...</div>
+                                <div id="menu-${id}" class="dropdown">
+                                    ${isOwner ? 
+                                        `<button onclick="deletarPost('${id}', '${p.imagemPost}')" style="color:red">Deletar</button>` : 
+                                        `<button onclick="denunciarPost('${id}')">Denunciar</button>`
+                                    }
+                                </div>
+                            </div>
                         </div>
-                        ${imagemHTML}
+
+                        ${p.imagemPost ? `<img src="${p.imagemPost}" class="post-img">` : ''}
+
+                        <div class="post-actions">
+                            <span class="action-btn" onclick="alert('Curtiu!')">❤️</span>
+                            <span class="action-btn" onclick="alert('Abrir comentários...')">💬</span>
+                            <span class="action-btn" onclick="alert('Salvo!')">🔖</span>
+                        </div>
+
                         <div class="post-content">
                             <strong>${p.nome}</strong> ${p.texto}
                         </div>
@@ -202,6 +213,5 @@
         });
     }
 </script>
-
 </body>
 </html>
