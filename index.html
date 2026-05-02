@@ -10,71 +10,49 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
     <style>
-        :root { 
-            --orkut-pink: #ED2590; 
-            --orkut-gradient: linear-gradient(135deg, #ED2590 0%, #ff80bf 100%);
-            --border: #f9badb;
-        }
+        :root { --orkut-pink: #ED2590; --orkut-gradient: linear-gradient(135deg, #ED2590 0%, #ff80bf 100%); }
+        body { font-family: "Lucida Grande", Tahoma, Arial, sans-serif; background: #fff; margin: 0; padding-bottom: 80px; color: #333; }
         
-        body { font-family: "Lucida Grande", Tahoma, Arial, sans-serif; background: #fff; margin: 0; padding-bottom: 80px; color: #333; overflow-x: hidden; }
+        /* LOGIN */
+        #login-screen { height: 100vh; background: var(--orkut-gradient); display: flex; align-items: center; justify-content: center; }
+        .login-card { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); padding: 40px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3); text-align: center; color: white; width: 80%; max-width: 320px; }
         
-        /* TELA DE LOGIN ESTILIZADA */
-        #login-screen { 
-            height: 100vh; background: var(--orkut-gradient); 
-            display: flex; align-items: center; justify-content: center; flex-direction: column;
-            color: white; text-align: center;
-        }
-        .login-card {
-            background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px);
-            padding: 40px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 80%; max-width: 320px;
-        }
-        .login-card h1 { font-style: italic; font-size: 48px; margin: 0 0 10px 0; }
-
         /* HEADER */
         header { position: fixed; top: 0; width: 100%; z-index: 1000; background: white; }
-        .top-nav { background: var(--orkut-pink); height: 55px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .top-nav { background: var(--orkut-pink); height: 55px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
         .logo { color: white; font-size: 24px; font-weight: bold; font-style: italic; text-decoration: none; }
         .top-icons { display: flex; gap: 18px; color: white; }
         .top-icons svg { cursor: pointer; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.5; }
-
-        /* BUSCA */
         .search-area { padding: 12px; border-bottom: 1px solid #eee; display: flex; justify-content: center; }
-        .search-input { width: 95%; max-width: 500px; border: 2px solid #f0f0f0; padding: 10px 18px; border-radius: 25px; outline: none; transition: 0.3s; }
-        .search-input:focus { border-color: var(--orkut-pink); }
+        .search-input { width: 95%; max-width: 500px; border: 2px solid #f0f0f0; padding: 10px 18px; border-radius: 25px; outline: none; }
 
         /* FEED */
         main { width: 100%; max-width: 500px; margin: 125px auto 0; padding: 15px; box-sizing: border-box; }
-        .view-title { color: var(--orkut-pink); font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; text-align: center; }
+        .view-title { color: var(--orkut-pink); font-size: 14px; font-weight: 900; text-transform: uppercase; margin-bottom: 20px; text-align: center; }
+        .post-box { border: 2px solid var(--orkut-pink); border-radius: 15px; padding: 15px; margin-bottom: 30px; }
+        textarea { width: 100%; border: none; font-size: 16px; outline: none; resize: none; min-height: 60px; }
 
-        /* POST BOX */
-        .post-box { border: 2px solid var(--orkut-pink); border-radius: 15px; padding: 15px; margin-bottom: 30px; background: #fff; }
-        textarea { width: 100%; border: none; font-size: 16px; outline: none; resize: none; min-height: 60px; color: #555; }
-        .post-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
-
-        /* CARDS REFEITOS */
-        .post-card { border: 1px solid #eee; margin-bottom: 25px; border-radius: 12px; background: white; box-shadow: 0 2px 15px rgba(0,0,0,0.03); }
+        /* CARDS */
+        .post-card { border: 1px solid #eee; margin-bottom: 25px; border-radius: 12px; background: white; overflow: hidden; }
         .post-header { display: flex; align-items: center; justify-content: space-between; padding: 12px; }
         .user-pic { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
-        .post-img { width: 100%; display: block; background: #f9f9f9; }
-        .post-text { padding: 15px; font-size: 15px; line-height: 1.4; color: #444; }
+        .post-img { width: 100%; display: block; max-height: 500px; object-fit: contain; background: #fafafa; }
+        .post-text { padding: 15px; font-size: 15px; }
 
-        /* AÇÕES COM FIX PARA ÍCONES */
         .card-actions { display: flex; gap: 20px; padding: 12px 15px; border-top: 1px solid #fcfcfc; }
         .action-btn { display: flex; align-items: center; gap: 6px; cursor: pointer; color: #999; font-size: 13px; font-weight: bold; }
-        .action-btn svg { width: 22px; height: 22px; stroke-width: 2; }
+        .action-btn svg { width: 22px; height: 22px; stroke-width: 2; fill: none; }
         .active-like { color: var(--orkut-pink); }
         .active-like svg { fill: var(--orkut-pink); stroke: var(--orkut-pink); }
         .active-save { color: #FFA500; }
         .active-save svg { fill: #FFA500; stroke: #FFA500; }
 
-        /* BOTTOM NAV - FIX ÍCONES GIGANTES */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+        /* NAV */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: white; border-top: 1px solid #eee; display: flex; justify-content: space-around; align-items: center; }
         .nav-item { cursor: pointer; color: #bbb; display: flex; flex-direction: column; align-items: center; flex: 1; }
         .nav-item svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 2; fill: none; }
         .nav-item.active { color: var(--orkut-pink); }
         .nav-item span { font-size: 10px; font-weight: bold; margin-top: 4px; }
-
         .hidden { display: none !important; }
     </style>
 </head>
@@ -82,8 +60,8 @@
 
 <div id="login-screen">
     <div class="login-card">
-        <h1>orkut</h1>
-        <p style="margin-bottom: 30px; font-size: 14px; opacity: 0.9;">conecte-se com seus amigos</p>
+        <h1 style="font-style: italic; font-size: 48px; margin: 0;">orkut</h1>
+        <p style="margin-bottom: 30px; opacity: 0.8;">novo e rosa</p>
         <div id="g_id_onload" data-client_id="8393724573-kdnas52bjnhjvtkhahtqchm1p000b0i4.apps.googleusercontent.com" data-callback="handleLogin"></div>
         <div class="g_id_signin" data-type="standard" data-shape="pill"></div>
     </div>
@@ -98,23 +76,21 @@
         </div>
     </div>
     <div class="search-area">
-        <input type="text" id="search-input" class="search-input" placeholder="O que você procura?" oninput="filtrar(this.value)">
+        <input type="text" id="search-input" class="search-input" placeholder="Pesquisar..." oninput="filtrar(this.value)">
     </div>
 </header>
 
 <main id="app-content" class="hidden">
     <div id="view-title" class="view-title">Início</div>
-    
     <div id="area-postagem" class="post-box">
-        <textarea id="post-input" placeholder="No que você está pensando?"></textarea>
+        <textarea id="post-input" placeholder="O que há de novo?"></textarea>
         <img id="preview-post" class="hidden" style="width:100%; border-radius:10px; margin-top:10px;">
-        <div class="post-footer">
-            <label for="file-input" style="cursor:pointer; color:var(--orkut-pink); font-size:12px; font-weight:bold;">📷 + FOTO</label>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;">
+            <label for="file-input" style="cursor:pointer; color:var(--orkut-pink); font-weight:bold; font-size:12px;">📷 FOTO</label>
             <input type="file" id="file-input" class="hidden" onchange="previewImg(this)">
             <button onclick="enviarPost()" style="background:var(--orkut-pink); color:white; border:none; padding:8px 25px; border-radius:25px; font-weight:bold; cursor:pointer;">Postar</button>
         </div>
     </div>
-
     <div id="feed-container"></div>
 </main>
 
@@ -130,7 +106,6 @@
 </nav>
 
 <script>
-    // Config Firebase (Inalterado)
     const firebaseConfig = {
         apiKey: "AIzaSyDwtEYsXqq5Ed131USZ9tZhFqaJvD0480M",
         authDomain: "fir-75fa8.firebaseapp.com",
@@ -144,128 +119,130 @@
     const storage = firebase.storage();
     
     let userAtual = null;
-    let telaAtual = 'feed';
-    let unsubFeed = null;
+    let unsub = null;
 
     function handleLogin(response) {
         const payload = JSON.parse(atob(response.credential.split('.')[1]));
         userAtual = { name: payload.name, photo: payload.picture, id: payload.sub };
         document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('app-content').classList.remove('hidden');
-        document.getElementById('header-app').classList.remove('hidden');
-        document.getElementById('bottom-bar').classList.remove('hidden');
+        document.querySelectorAll('.hidden').forEach(el => el.classList.remove('hidden'));
         trocarTela('feed');
     }
 
     function trocarTela(nova) {
-        telaAtual = nova;
         document.getElementById('view-title').innerText = nova.replace('_', ' ');
         document.getElementById('area-postagem').classList.toggle('hidden', nova !== 'feed');
-        
-        // Update Nav
         document.getElementById('nav-home').classList.toggle('active', nova === 'feed');
         document.getElementById('nav-explorar').classList.toggle('active', nova === 'explorar');
-
-        carregarConteudo();
+        carregarConteudo(nova);
     }
 
-    function previewImg(input) {
-        if (input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = e => {
-                const p = document.getElementById('preview-post');
-                p.src = e.target.result; p.classList.remove('hidden');
-            };
-            reader.readAsDataURL(input.files[0]);
+    function previewImg(i) {
+        if (i.files[0]) {
+            const r = new FileReader();
+            r.onload = e => { const p = document.getElementById('preview-post'); p.src = e.target.result; p.classList.remove('hidden'); };
+            r.readAsDataURL(i.files[0]);
         }
     }
 
     async function enviarPost() {
-        const txt = document.getElementById('post-input').value;
-        const file = document.getElementById('file-input').files[0];
-        if (!txt && !file) return;
-
+        const t = document.getElementById('post-input').value;
+        const f = document.getElementById('file-input').files[0];
+        if (!t && !f) return;
         let url = "";
-        if (file) {
-            const ref = storage.ref().child(`v2/${userAtual.id}/${Date.now()}`);
-            await ref.put(file);
+        if (f) {
+            const ref = storage.ref().child(`v3/${Date.now()}`);
+            await ref.put(f);
             url = await ref.getDownloadURL();
         }
-
         await db.collection("posts").add({
             uid: userAtual.id, nome: userAtual.name, foto: userAtual.photo,
-            texto: txt, imagem: url, data: firebase.firestore.FieldValue.serverTimestamp(),
+            texto: t, imagem: url, data: firebase.firestore.FieldValue.serverTimestamp(),
             likes: 0, saves: 0
         });
-
         document.getElementById('post-input').value = "";
         document.getElementById('preview-post').classList.add('hidden');
-        document.getElementById('file-input').value = "";
     }
 
-    async function toggleAction(postId, coll, field) {
-        const ref = db.collection("posts").doc(postId).collection(coll).doc(userAtual.id);
-        const doc = await ref.get();
-        if(!doc.exists) {
-            await ref.set({ u: userAtual.id });
-            await db.collection("posts").doc(postId).update({ [field]: firebase.firestore.FieldValue.increment(1) });
-        } else {
-            await ref.delete();
-            await db.collection("posts").doc(postId).update({ [field]: firebase.firestore.FieldValue.increment(-1) });
-        }
-    }
+    async function carregarConteudo(tipo) {
+        if(unsub) unsub();
+        const container = document.getElementById('feed-container');
+        container.innerHTML = ""; // Limpa apenas na troca de tela
 
-    function carregarConteudo() {
-        if(unsubFeed) unsubFeed(); // Mata o ouvinte anterior para evitar duplicidade
-        
-        let query = db.collection("posts");
-        if(telaAtual === 'explorar') query = query.orderBy("likes", "desc");
-        else query = query.orderBy("data", "desc");
+        let q = db.collection("posts");
+        if(tipo === 'explorar') q = q.orderBy("likes", "desc");
+        else q = q.orderBy("data", "desc");
 
-        unsubFeed = query.onSnapshot(async snap => {
-            const feed = document.getElementById('feed-container');
-            feed.innerHTML = ""; // Limpa antes de renderizar
+        unsub = q.onSnapshot(async snap => {
+            // Usamos um Map para gerenciar os elementos e evitar duplicados
+            for (const change of snap.docChanges()) {
+                const data = change.doc.data();
+                const id = change.doc.id;
 
-            for (const doc of snap.docs) {
-                const p = doc.data();
-                const id = doc.id;
+                if (change.type === "added") {
+                    const myLike = (await db.collection("posts").doc(id).collection("likes").doc(userAtual.id).get()).exists;
+                    const mySave = (await db.collection("posts").doc(id).collection("saves").doc(userAtual.id).get()).exists;
 
-                // Verificações rápidas de Like/Save
-                const myLike = (await db.collection("posts").doc(id).collection("likes").doc(userAtual.id).get()).exists;
-                const mySave = (await db.collection("posts").doc(id).collection("saves").doc(userAtual.id).get()).exists;
+                    if (tipo === 'minhas_curtidas' && !myLike) continue;
+                    if (tipo === 'meus_salvos' && !mySave) continue;
 
-                if (telaAtual === 'minhas_curtidas' && !myLike) continue;
-                if (telaAtual === 'meus_salvos' && !mySave) continue;
-
-                const card = document.createElement('div');
-                card.className = 'post-card';
-                card.innerHTML = `
-                    <div class="post-header">
-                        <div style="display:flex;align-items:center;gap:10px">
-                            <img src="${p.foto}" class="user-pic">
-                            <span style="font-weight:bold;font-size:13px">${p.nome}</span>
+                    const div = document.createElement('div');
+                    div.id = `post-${id}`;
+                    div.className = 'post-card';
+                    div.innerHTML = `
+                        <div class="post-header">
+                            <div style="display:flex;align-items:center;gap:10px">
+                                <img src="${data.foto}" class="user-pic">
+                                <span style="font-weight:bold;font-size:13px">${data.nome}</span>
+                            </div>
                         </div>
-                        ${p.uid === userAtual.id ? `<span onclick="deletar('${id}')" style="color:#ddd;cursor:pointer;font-size:11px">excluir</span>` : ''}
-                    </div>
-                    ${p.imagem ? `<img src="${p.imagem}" class="post-img">` : ''}
-                    <div class="post-text">${p.texto}</div>
-                    <div class="card-actions">
-                        <div class="action-btn ${myLike ? 'active-like' : ''}" onclick="toggleAction('${id}', 'likes', 'likes')">
-                            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                            <span>${p.likes || 0}</span>
-                        </div>
-                        <div class="action-btn ${mySave ? 'active-save' : ''}" onclick="toggleAction('${id}', 'saves', 'saves')">
-                            <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
-                            <span>${p.saves || 0}</span>
-                        </div>
-                    </div>`;
-                feed.appendChild(card);
+                        ${data.imagem ? `<img src="${data.imagem}" class="post-img">` : ''}
+                        <div class="post-text">${data.texto}</div>
+                        <div class="card-actions">
+                            <div class="action-btn ${myLike ? 'active-like' : ''}" onclick="toggleAt('${id}', 'likes')">
+                                <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                <span class="lk-cnt">${data.likes || 0}</span>
+                            </div>
+                            <div class="action-btn ${mySave ? 'active-save' : ''}" onclick="toggleAt('${id}', 'saves')">
+                                <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                                <span class="sv-cnt">${data.saves || 0}</span>
+                            </div>
+                        </div>`;
+                    
+                    if(tipo === 'explorar') container.appendChild(div);
+                    else container.prepend(div);
+                }
+                
+                if (change.type === "modified") {
+                    const el = document.getElementById(`post-${id}`);
+                    if(el) {
+                        el.querySelector('.lk-cnt').innerText = data.likes || 0;
+                        el.querySelector('.sv-cnt').innerText = data.saves || 0;
+                    }
+                }
+
+                if (change.type === "removed") {
+                    const el = document.getElementById(`post-${id}`);
+                    if(el) el.remove();
+                }
             }
         });
     }
 
-    async function deletar(id) {
-        if(confirm("Deseja apagar?")) await db.collection("posts").doc(id).delete();
+    async function toggleAt(id, coll) {
+        const ref = db.collection("posts").doc(id).collection(coll).doc(userAtual.id);
+        const has = (await ref.get()).exists;
+        const btn = event.currentTarget;
+        
+        if(!has) {
+            await ref.set({u: userAtual.id});
+            await db.collection("posts").doc(id).update({[coll]: firebase.firestore.FieldValue.increment(1)});
+            btn.classList.add(coll === 'likes' ? 'active-like' : 'active-save');
+        } else {
+            await ref.delete();
+            await db.collection("posts").doc(id).update({[coll]: firebase.firestore.FieldValue.increment(-1)});
+            btn.classList.remove(coll === 'likes' ? 'active-like' : 'active-save');
+        }
     }
 
     function filtrar(v) {
