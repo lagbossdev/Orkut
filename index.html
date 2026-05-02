@@ -10,58 +10,76 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
     <style>
-        :root { --orkut-pink: #ED2590; --orkut-gradient: linear-gradient(135deg, #ED2590 0%, #ff80bf 100%); }
-        body { font-family: "Lucida Grande", Tahoma, Arial, sans-serif; background: #fff; margin: 0; color: #333; }
+        :root { 
+            --orkut-pink: #ED2590; 
+            --orkut-gradient: linear-gradient(135deg, #ED2590 0%, #ff80bf 100%);
+            --glass: rgba(255, 255, 255, 0.25);
+        }
         
-        /* LOGIN TOTAL - Ocupa tudo e fica por cima de tudo */
+        body { font-family: "Lucida Grande", Tahoma, Arial, sans-serif; background: #fff; margin: 0; color: #333; overflow-x: hidden; }
+        
+        /* NOVO LOGIN ESTILIZADO */
         #login-screen { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
             background: var(--orkut-gradient); z-index: 9999; 
-            display: flex; align-items: center; justify-content: center; 
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
         }
+        .bg-blob {
+            position: absolute; width: 300px; height: 300px; background: rgba(255,255,255,0.1);
+            filter: blur(50px); border-radius: 50%; z-index: -1; animation: float 10s infinite alternate;
+        }
+        @keyframes float { from { transform: translate(-20%, -20%); } to { transform: translate(20%, 20%); } }
+
         .login-card { 
-            background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); 
-            padding: 40px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.3); 
-            text-align: center; color: white; width: 85%; max-width: 320px; 
+            background: var(--glass); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: 50px 30px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.4); 
+            text-align: center; color: white; width: 85%; max-width: 350px; 
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
         }
+        .login-card h1 { font-style: italic; font-size: 56px; margin: 0; letter-spacing: -2px; text-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+
+        /* INTERFACE PRINCIPAL */
+        header { position: fixed; top: 0; width: 100%; z-index: 1000; background: white; display: none; border-bottom: 1px solid #f0f0f0; }
+        .top-nav { background: var(--orkut-pink); height: 60px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+        .logo { color: white; font-size: 26px; font-weight: bold; font-style: italic; text-decoration: none; }
+        .top-icons { display: flex; gap: 20px; color: white; }
+        .top-icons svg { cursor: pointer; width: 24px; height: 24px; transition: transform 0.2s; fill: none; stroke: currentColor; stroke-width: 2; }
+        .top-icons svg:active { transform: scale(0.8); }
+
+        .search-area { padding: 12px; display: flex; justify-content: center; background: white; }
+        .search-input { width: 95%; max-width: 500px; border: 1.5px solid #eee; padding: 12px 20px; border-radius: 30px; outline: none; background: #fafafa; font-size: 14px; }
+
+        main { width: 100%; max-width: 500px; margin: 135px auto 0; padding: 15px; box-sizing: border-box; display: none; padding-bottom: 100px; }
+        .view-title { color: var(--orkut-pink); font-size: 13px; font-weight: 900; text-transform: uppercase; margin-bottom: 25px; text-align: center; letter-spacing: 2px; }
+
+        /* POST BOX */
+        .post-box { border: 2px solid var(--orkut-pink); border-radius: 20px; padding: 18px; margin-bottom: 30px; background: white; box-shadow: 0 5px 15px rgba(237,37,144,0.05); }
+        textarea { width: 100%; border: none; font-size: 16px; outline: none; resize: none; min-height: 70px; color: #444; }
+
+        /* CARDS DE POSTAGEM */
+        .post-card { border: 1px solid #eee; margin-bottom: 30px; border-radius: 16px; background: white; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+        .post-header { display: flex; align-items: center; padding: 15px; gap: 12px; }
+        .user-pic { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 2px solid var(--orkut-pink); }
+        .post-img { width: 100%; display: block; max-height: 550px; object-fit: contain; background: #fdfdfd; }
+        .post-text { padding: 15px 20px; font-size: 16px; line-height: 1.5; color: #222; }
+
+        /* FOOTER DOS CARDS */
+        .card-actions { display: flex; gap: 25px; padding: 15px 20px; border-top: 1px solid #f8f8f8; background: #fffbff; }
+        .action-item { display: flex; align-items: center; gap: 8px; cursor: pointer; color: #888; font-size: 14px; font-weight: 600; transition: 0.2s; user-select: none; }
+        .action-item svg { width: 24px; height: 24px; stroke-width: 2; fill: none; pointer-events: none; }
         
-        /* HEADER - Escondido por padrão */
-        header { position: fixed; top: 0; width: 100%; z-index: 1000; background: white; display: none; }
-        .top-nav { background: var(--orkut-pink); height: 55px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
-        .logo { color: white; font-size: 24px; font-weight: bold; font-style: italic; text-decoration: none; }
-        .top-icons { display: flex; gap: 18px; color: white; }
-        .top-icons svg { cursor: pointer; width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2.5; }
-        .search-area { padding: 12px; border-bottom: 1px solid #eee; display: flex; justify-content: center; }
-        .search-input { width: 95%; max-width: 500px; border: 2px solid #f0f0f0; padding: 10px 18px; border-radius: 25px; outline: none; }
-
-        /* CONTEÚDO */
-        main { width: 100%; max-width: 500px; margin: 125px auto 0; padding: 15px; box-sizing: border-box; display: none; padding-bottom: 80px; }
-        .view-title { color: var(--orkut-pink); font-size: 14px; font-weight: 900; text-transform: uppercase; margin-bottom: 20px; text-align: center; }
-        .post-box { border: 2px solid var(--orkut-pink); border-radius: 15px; padding: 15px; margin-bottom: 30px; background: white; }
-        textarea { width: 100%; border: none; font-size: 16px; outline: none; resize: none; min-height: 60px; }
-
-        /* CARDS */
-        .post-card { border: 1px solid #eee; margin-bottom: 25px; border-radius: 12px; background: white; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .post-header { display: flex; align-items: center; padding: 12px; gap: 10px; }
-        .user-pic { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1px solid var(--orkut-pink); }
-        .post-img { width: 100%; display: block; max-height: 500px; object-fit: contain; background: #fafafa; }
-        .post-text { padding: 15px; font-size: 15px; border-top: 1px solid #f9f9f9; }
-
-        /* ACTIONS */
-        .card-actions { display: flex; gap: 20px; padding: 12px 15px; border-top: 1px solid #fcfcfc; background: #fffcfd; }
-        .action-btn { display: flex; align-items: center; gap: 6px; cursor: pointer; color: #999; font-size: 13px; font-weight: bold; }
-        .action-btn svg { width: 22px; height: 22px; stroke-width: 2; fill: none; }
         .active-like { color: var(--orkut-pink); }
         .active-like svg { fill: var(--orkut-pink); stroke: var(--orkut-pink); }
-        .active-save { color: #FFA500; }
-        .active-save svg { fill: #FFA500; stroke: #FFA500; }
+        
+        .active-save { color: #f39c12; }
+        .active-save svg { fill: #f39c12; stroke: #f39c12; }
 
-        /* BOTTOM NAV - Escondida por padrão */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: white; border-top: 1px solid #eee; display: none; justify-content: space-around; align-items: center; z-index: 1000; }
-        .nav-item { cursor: pointer; color: #bbb; display: flex; flex-direction: column; align-items: center; flex: 1; text-decoration: none; }
-        .nav-item svg { width: 26px; height: 26px; stroke: currentColor; stroke-width: 2; fill: none; }
-        .nav-item.active { color: var(--orkut-pink); }
-        .nav-item span { font-size: 10px; font-weight: bold; margin-top: 4px; }
+        /* BARRA INFERIOR */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 70px; background: white; border-top: 1px solid #eee; display: none; justify-content: space-around; align-items: center; z-index: 1000; }
+        .nav-link { cursor: pointer; color: #ccc; display: flex; flex-direction: column; align-items: center; flex: 1; transition: 0.3s; }
+        .nav-link svg { width: 28px; height: 28px; stroke: currentColor; stroke-width: 2.5; fill: none; }
+        .nav-link.active { color: var(--orkut-pink); }
+        .nav-link span { font-size: 10px; font-weight: 800; margin-top: 5px; }
 
         .hidden { display: none !important; }
     </style>
@@ -69,11 +87,13 @@
 <body>
 
 <div id="login-screen">
+    <div class="bg-blob" style="top:10%; left:10%;"></div>
+    <div class="bg-blob" style="bottom:10%; right:10%; background:rgba(255,255,255,0.05);"></div>
     <div class="login-card">
-        <h1 style="font-style: italic; font-size: 48px; margin: 0;">orkut</h1>
-        <p style="margin-bottom: 30px; opacity: 0.9; font-size: 14px;">conecte-se agora</p>
+        <h1>orkut</h1>
+        <p style="margin-bottom: 40px; opacity: 0.9; font-weight: 300; letter-spacing: 1px;">o mundo é rosa e branco</p>
         <div id="g_id_onload" data-client_id="8393724573-kdnas52bjnhjvtkhahtqchm1p000b0i4.apps.googleusercontent.com" data-callback="handleLogin"></div>
-        <div class="g_id_signin" data-type="standard" data-shape="pill"></div>
+        <div class="g_id_signin" data-type="standard" data-shape="pill" data-theme="filled_blue"></div>
     </div>
 </div>
 
@@ -86,33 +106,33 @@
         </div>
     </div>
     <div class="search-area">
-        <input type="text" id="search-input" class="search-input" placeholder="Pesquisar..." oninput="filtrar(this.value)">
+        <input type="text" id="search-input" class="search-input" placeholder="Pesquise por amigos ou scraps..." oninput="filtrar(this.value)">
     </div>
 </header>
 
 <main id="app-content">
     <div id="view-title" class="view-title">Início</div>
     <div id="area-postagem" class="post-box">
-        <textarea id="post-input" placeholder="O que você quer contar?"></textarea>
-        <img id="preview-post" class="hidden" style="width:100%; border-radius:10px; margin-top:10px; border: 1px solid #eee;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
-            <label for="file-input" style="cursor:pointer; color:var(--orkut-pink); font-weight:bold; font-size:12px; display:flex; align-items:center; gap:5px;">
-                <svg style="width:18px;height:18px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
-                FOTO
+        <textarea id="post-input" placeholder="O que você quer compartilhar?"></textarea>
+        <img id="preview-post" class="hidden" style="width:100%; border-radius:12px; margin-top:15px; border: 1px solid #f0f0f0;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
+            <label for="file-input" style="cursor:pointer; color:var(--orkut-pink); font-weight:bold; font-size:13px; display:flex; align-items:center; gap:8px;">
+                <svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                ADICIONAR FOTO
             </label>
             <input type="file" id="file-input" class="hidden" onchange="previewImg(this)">
-            <button onclick="enviarPost()" style="background:var(--orkut-pink); color:white; border:none; padding:8px 25px; border-radius:25px; font-weight:bold; cursor:pointer; box-shadow: 0 4px 10px rgba(237,37,144,0.3);">Postar</button>
+            <button onclick="enviarPost()" style="background:var(--orkut-pink); color:white; border:none; padding:10px 30px; border-radius:30px; font-weight:bold; cursor:pointer; box-shadow: 0 10px 20px rgba(237,37,144,0.2);">Postar</button>
         </div>
     </div>
     <div id="feed-container"></div>
 </main>
 
 <nav id="bottom-bar" class="bottom-nav">
-    <div class="nav-item active" id="nav-home" onclick="trocarTela('feed')">
+    <div class="nav-link active" id="nav-home" onclick="trocarTela('feed')">
         <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
         <span>INÍCIO</span>
     </div>
-    <div class="nav-item" id="nav-explorar" onclick="trocarTela('explorar')">
+    <div class="nav-link" id="nav-explorar" onclick="trocarTela('explorar')">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         <span>EXPLORAR</span>
     </div>
@@ -138,15 +158,14 @@
         const payload = JSON.parse(atob(response.credential.split('.')[1]));
         userAtual = { name: payload.name, photo: payload.picture, id: payload.sub };
         
-        // Esconde a tela de login totalmente
-        document.getElementById('login-screen').style.display = 'none';
-        
-        // Exibe o App com flex/block conforme necessário
-        document.getElementById('header-app').style.display = 'block';
-        document.getElementById('bottom-bar').style.display = 'flex';
-        document.getElementById('app-content').style.display = 'block';
-        
-        trocarTela('feed');
+        document.getElementById('login-screen').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('header-app').style.display = 'block';
+            document.getElementById('bottom-bar').style.display = 'flex';
+            document.getElementById('app-content').style.display = 'block';
+            trocarTela('feed');
+        }, 500);
     }
 
     function trocarTela(nova) {
@@ -173,7 +192,7 @@
         
         let url = "";
         if (f) {
-            const ref = storage.ref().child(`v4/${Date.now()}`);
+            const ref = storage.ref().child(`v5/${Date.now()}`);
             await ref.put(f);
             url = await ref.getDownloadURL();
         }
@@ -202,8 +221,12 @@
                 const id = change.doc.id;
 
                 if (change.type === "added") {
-                    const myLike = (await db.collection("posts").doc(id).collection("likes").doc(userAtual.id).get()).exists;
-                    const mySave = (await db.collection("posts").doc(id).collection("saves").doc(userAtual.id).get()).exists;
+                    // Checagem de interação real
+                    const likeDoc = await db.collection("posts").doc(id).collection("likes").doc(userAtual.id).get();
+                    const saveDoc = await db.collection("posts").doc(id).collection("saves").doc(userAtual.id).get();
+                    
+                    const myLike = likeDoc.exists;
+                    const mySave = saveDoc.exists;
 
                     if (tipo === 'minhas_curtidas' && !myLike) continue;
                     if (tipo === 'meus_salvos' && !mySave) continue;
@@ -214,16 +237,16 @@
                     div.innerHTML = `
                         <div class="post-header">
                             <img src="${data.foto}" class="user-pic">
-                            <span style="font-weight:bold;font-size:13px">${data.nome}</span>
+                            <span style="font-weight:bold;font-size:14px">${data.nome}</span>
                         </div>
                         ${data.imagem ? `<img src="${data.imagem}" class="post-img">` : ''}
                         <div class="post-text">${data.texto}</div>
                         <div class="card-actions">
-                            <div class="action-btn ${myLike ? 'active-like' : ''}" onclick="toggleAt('${id}', 'likes')">
+                            <div class="action-item ${myLike ? 'active-like' : ''}" onclick="interagir('${id}', 'likes')">
                                 <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                                 <span class="lk-cnt">${data.likes || 0}</span>
                             </div>
-                            <div class="action-btn ${mySave ? 'active-save' : ''}" onclick="toggleAt('${id}', 'saves')">
+                            <div class="action-item ${mySave ? 'active-save' : ''}" onclick="interagir('${id}', 'saves')">
                                 <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
                                 <span class="sv-cnt">${data.saves || 0}</span>
                             </div>
@@ -248,19 +271,27 @@
         });
     }
 
-    async function toggleAt(id, coll) {
-        const ref = db.collection("posts").doc(id).collection(coll).doc(userAtual.id);
-        const has = (await ref.get()).exists;
+    // FUNÇÃO DE INTERAÇÃO CORRIGIDA E SINCRONIZADA
+    async function interagir(id, colecao) {
         const btn = event.currentTarget;
-        
-        if(!has) {
-            await ref.set({u: userAtual.id});
-            await db.collection("posts").doc(id).update({[coll]: firebase.firestore.FieldValue.increment(1)});
-            btn.classList.add(coll === 'likes' ? 'active-like' : 'active-save');
-        } else {
-            await ref.delete();
-            await db.collection("posts").doc(id).update({[coll]: firebase.firestore.FieldValue.increment(-1)});
-            btn.classList.remove(coll === 'likes' ? 'active-like' : 'active-save');
+        const refSub = db.collection("posts").doc(id).collection(colecao).doc(userAtual.id);
+        const refPost = db.collection("posts").doc(id);
+
+        try {
+            const doc = await refSub.get();
+            if (!doc.exists) {
+                // Curtir/Salvar
+                await refSub.set({ user: userAtual.id });
+                await refPost.update({ [colecao]: firebase.firestore.FieldValue.increment(1) });
+                btn.classList.add(colecao === 'likes' ? 'active-like' : 'active-save');
+            } else {
+                // Remover
+                await refSub.delete();
+                await refPost.update({ [colecao]: firebase.firestore.FieldValue.increment(-1) });
+                btn.classList.remove(colecao === 'likes' ? 'active-like' : 'active-save');
+            }
+        } catch (e) {
+            console.error("Erro na interação:", e);
         }
     }
 
