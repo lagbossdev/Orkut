@@ -1,299 +1,460 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>orkut</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Trebuchet+MS:wght@400;700&display=swap" rel="stylesheet">
-    
-    <!-- SCRIPT DO GOOGLE -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Orkut · Faça login</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        orkut: {
-                            purple: '#9370DB',
-                            light: '#E6E6FA',
-                            yellow: '#FFD700',
-                            dark: '#4B0082'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                        orkut: ['"Trebuchet MS"', 'sans-serif'],
-                    },
-                }
-            }
-        }
+    body {
+      font-family: 'Segoe UI', Tahoma, 'Lucida Grande', Arial, sans-serif;
+      background: #d4e0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
 
-        // FUNÇÃO QUE RECEBE OS DADOS DO LOGIN
-        function handleCredentialResponse(response) {
-            console.log("Login OK!");
-            
-            // Decodifica os dados
-            const payload = JSON.parse(atob(response.credential.split('.')[1]));
-            
-            // Esconde login e mostra o conteúdo
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('mainContent').style.display = 'block';
-            
-            // Coloca nome e foto do Google no perfil
-            document.getElementById('profileName').innerText = payload.name;
-            document.getElementById('profilePicture').src = payload.picture;
-        }
-    </script>
+    .orkut-container {
+      background: white;
+      border: 1px solid #c0cde0;
+      border-radius: 3px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+      width: 100%;
+      max-width: 400px;
+      padding: 30px 25px 20px;
+      text-align: center;
+      position: relative;
+    }
 
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .nav-logo-text {
-                font-family: "Trebuchet MS", sans-serif;
-                font-size: 22px;
-                font-weight: bold;
-                color: #9370DB;
-                letter-spacing: -0.5px;
-            }
-            .heart-animation {
-                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            }
-            .heart-active {
-                color: #ED4956 !important;
-                transform: scale(1.2);
-            }
-            .tab-active {
-                border-bottom: 2px solid #9370DB;
-                color: #9370DB;
-                font-weight: bold;
-            }
-        }
-    </style>
+    .logo-area {
+      margin-bottom: 25px;
+    }
+
+    .orkut-logo {
+      font-size: 42px;
+      font-weight: 300;
+      letter-spacing: -2px;
+      color: #ed2590;
+      font-family: 'Trebuchet MS', 'Lucida Sans', Arial, sans-serif;
+      margin-bottom: 5px;
+    }
+
+    .orkut-logo span {
+      color: #515151;
+      font-weight: 500;
+    }
+
+    .tagline {
+      color: #666;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      margin-top: -5px;
+    }
+
+    .info-box {
+      background: #f5f8ff;
+      border: 1px solid #d9e2f0;
+      border-radius: 12px;
+      padding: 18px 15px;
+      margin-bottom: 25px;
+      font-size: 13px;
+      color: #4a5568;
+      text-align: left;
+      line-height: 1.5;
+    }
+
+    .info-box strong {
+      color: #ed2590;
+      display: block;
+      margin-bottom: 5px;
+      font-size: 14px;
+    }
+
+    .divider-text {
+      display: flex;
+      align-items: center;
+      color: #999;
+      font-size: 12px;
+      margin: 18px 0;
+      text-transform: uppercase;
+    }
+
+    .divider-text::before,
+    .divider-text::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: #ddd;
+    }
+
+    .divider-text span {
+      margin: 0 10px;
+      white-space: nowrap;
+    }
+
+    /* Botão customizado do Google */
+    .g-signin-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .google-btn-custom {
+      background: white;
+      border: 1px solid #dadce0;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 20px 11px 14px;
+      cursor: pointer;
+      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      color: #3c4043;
+      transition: all 0.15s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      letter-spacing: 0.2px;
+    }
+
+    .google-btn-custom:hover {
+      background: #f8f9ff;
+      border-color: #b8c0ce;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    .google-btn-custom img {
+      width: 20px;
+      height: 20px;
+    }
+
+    .footer-links {
+      margin-top: 25px;
+      font-size: 11px;
+      color: #999;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: #6b7f99;
+      text-decoration: none;
+    }
+
+    .footer-links a:hover {
+      text-decoration: underline;
+      color: #ed2590;
+    }
+
+    .user-avatar-mini {
+      background: #ed2590;
+      color: white;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      margin-right: 8px;
+      font-size: 16px;
+    }
+
+    #welcomeScreen {
+      display: none;
+    }
+
+    .welcome-header {
+      font-size: 20px;
+      color: #333;
+      margin: 10px 0;
+    }
+
+    .logout-link {
+      background: none;
+      border: none;
+      color: #ed2590;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 13px;
+      margin-top: 18px;
+      text-decoration: underline;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .error-msg {
+      color: #c62828;
+      font-size: 12px;
+      margin-top: 10px;
+      background: #ffeaea;
+      padding: 8px;
+      border-radius: 6px;
+    }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-900 font-sans">
+<body>
+  <div class="orkut-container" id="mainContainer">
+    
+    <!-- Tela de Login -->
+    <div id="loginScreen">
+      <div class="logo-area">
+        <div class="orkut-logo">orkut<span>.com</span></div>
+        <div class="tagline">Conecte-se aos seus amigos</div>
+      </div>
 
-    <!-- TELA DE LOGIN -->
-    <div id="loginScreen" class="fixed inset-0 z-[100] bg-white flex items-center justify-center">
-        <div class="w-full max-w-md px-4">
-            
-            <div class="text-center mb-8">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Orkut_Logo_2.png" 
-                     class="h-16 mx-auto mb-3" 
-                     alt="Logo Orkut">
-                <h1 class="nav-logo-text text-4xl">orkut</h1>
-                <p class="text-gray-500 mt-2">Conecte-se às pessoas que fazem a sua vida.</p>
-            </div>
+      <div class="info-box">
+        <strong>🌟 Orkut está de volta!</strong>
+        Faça login com sua conta Google para reviver a nostalgia. Seus amigos, depoimentos e scraps esperam por você.
+      </div>
 
-            <div class="flex border-b mb-6">
-                <button id="tabLogin" class="flex-1 py-2 text-center tab-active">Entrar</button>
-                <button id="tabCadastro" class="flex-1 py-2 text-center text-gray-500">Criar conta</button>
-            </div>
+      <div class="divider-text"><span>Entrar com</span></div>
 
-            <div id="formLogin" class="space-y-4">
-                <div>
-                    <input type="email" placeholder="E-mail" class="w-full p-3 border border-gray-300 rounded focus:border-orkut-purple outline-none">
-                </div>
-                <div>
-                    <input type="password" placeholder="Senha" class="w-full p-3 border border-gray-300 rounded focus:border-orkut-purple outline-none">
-                </div>
-                <button class="w-full bg-orkut-purple text-white py-3 rounded font-bold hover:bg-orkut-dark transition-colors">
-                    Entrar
-                </button>
-                <p class="text-center text-sm text-orkut-purple mt-4 cursor-pointer">Esqueceu sua senha?</p>
-
-                <div class="flex items-center my-6">
-                    <hr class="flex-1 border-t">
-                    <span class="px-3 text-gray-500 text-sm">ou</span>
-                    <hr class="flex-1 border-t">
-                </div>
-
-                <!-- BOTÃO DO GOOGLE -->
-                <div class="text-center">
-                    <div id="g_id_onload"
-                         data-client_id="8393724573-kdnas52bjnhjvtkhahtqchm1p000b0i4.apps.googleusercontent.com"
-                         data-callback="handleCredentialResponse"
-                         data-auto_prompt="false">
-                    </div>
-
-                    <div class="g_id_signin"
-                         data-type="standard"
-                         data-size="large"
-                         data-theme="outline"
-                         data-text="sign_in_with"
-                         data-shape="rectangular"
-                         data-logo_alignment="left">
-                    </div>
-                </div>
-
-            </div>
-
-            <div id="formCadastro" class="space-y-4 hidden">
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="text" placeholder="Nome" class="p-3 border border-gray-300 rounded focus:border-orkut-purple outline-none">
-                    <input type="text" placeholder="Sobrenome" class="p-3 border border-gray-300 rounded focus:border-orkut-purple outline-none">
-                </div>
-                <div>
-                    <input type="email" placeholder="E-mail" class="w-full p-3 border border-gray-300 rounded focus:border-orkut-purple outline-none">
-                </div>
-                <div>
-                    <input type="password" placeholder="Senha" class="w-full p-3 border border-gray-300 rounded focus:border-orkut-purple outline-none">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <select class="p-3 border border-gray-300 rounded focus:border-orkut-purple outline-none">
-                        <option>Sexo</option>
-                        <option>Masculino</option>
-                        <option>Feminino</option>
-                    </select>
-                    <input type="date" placeholder="Data de nascimento" class="p-3 border border-gray-300 rounded focus:border-orkut-purple outline-none">
-                </div>
-                <button class="w-full bg-orkut-purple text-white py-3 rounded font-bold hover:bg-orkut-dark transition-colors">
-                    Cadastrar
-                </button>
-            </div>
-
+      <!-- Botão estilizado Google -->
+      <div class="g-signin-wrapper">
+        <div class="google-btn-custom" id="customGoogleBtn">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+          Fazer login com Google
         </div>
+      </div>
+
+      <div id="errorMessage" class="error-msg hidden"></div>
+      
+      <div class="footer-links">
+        <a href="#">Sobre o Orkut</a>
+        <a href="#">Privacidade</a>
+        <a href="#">Ajuda</a>
+      </div>
     </div>
 
-    <!-- CONTEÚDO PRINCIPAL -->
-    <div id="mainContent" class="hidden">
+    <!-- Tela de Boas-vindas (após login) -->
+    <div id="welcomeScreen">
+      <div class="logo-area">
+        <div class="orkut-logo">orkut<span>.com</span></div>
+      </div>
+      <div id="userAvatar" class="user-avatar-mini"></div>
+      <div class="welcome-header">Bem-vindo de volta!</div>
+      <p id="userName" style="color:#555; margin:5px 0; font-size:15px;"></p>
+      <p style="font-size:13px; color:#777; margin-bottom:20px;">Seu perfil está pronto 🧡</p>
+      
+      <div class="info-box" style="text-align:center;">
+        <strong>✨ Em breve</strong>
+        Scraps, comunidades, depoimentos e muito mais. Você está autenticado!
+      </div>
 
-        <nav class="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50 shadow-sm">
-            <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center h-16">
-                    <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Orkut_Logo_2.png" 
-                             class="h-8 w-auto" 
-                             alt="Logo Orkut">
-                        <span class="nav-logo-text">orkut</span>
-                    </div>
-                    <div class="flex items-center space-x-6">
-                        <i class="fa fa-home text-2xl cursor-pointer hover:text-orkut-purple transition-colors" title="Início"></i>
-                        <i class="fa fa-paper-plane-o text-2xl cursor-pointer hover:text-orkut-purple transition-colors" title="Recados"></i>
-                        <i class="fa fa-compass text-2xl cursor-pointer hover:text-orkut-purple transition-colors" title="Explorar"></i>
-                        <i class="fa fa-heart-o text-2xl cursor-pointer hover:text-orkut-purple transition-colors" title="Favoritos"></i>
-                    </div>
-                </div>
-            </div>
-        </nav>
+      <button class="logout-link" id="logoutBtn">Sair da conta</button>
+    </div>
+  </div>
 
-        <main class="max-w-6xl mx-auto pt-20 pb-10 px-4 grid grid-cols-1 md:grid-cols-3 gap-6">
-            
-            <div class="col-span-2 space-y-6">
+  <!-- Google Identity Services (GIS) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  
+  <script>
+    (function() {
+      // ======== CONFIGURAÇÃO ========
+      const GOOGLE_CLIENT_ID = '8393724573-kdnas52bjnhjvtkhahtqchm1p000b0i4.apps.googleusercontent.com';
+      
+      // Elementos do DOM
+      const loginScreen = document.getElementById('loginScreen');
+      const welcomeScreen = document.getElementById('welcomeScreen');
+      const customGoogleBtn = document.getElementById('customGoogleBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+      const userNameDisplay = document.getElementById('userName');
+      const userAvatar = document.getElementById('userAvatar');
+      const errorDiv = document.getElementById('errorMessage');
 
-                <div class="bg-white border rounded-lg p-4 shadow-sm">
-                     <p class="text-center text-sm text-gray-500 mb-3">Destaques</p>
-                     <div class="flex space-x-4 overflow-x-auto pb-2">
-                        <div class="flex flex-col items-center space-y-1 opacity-50 story-item cursor-pointer">
-                            <div class="w-16 h-16 rounded-full bg-orkut-light flex items-center justify-center text-orkut-dark text-2xl">
-                                <i class="fa fa-plus-circle"></i>
-                            </div>
-                            <span class="text-xs">Adicionar</span>
-                        </div>
-                    </div>
-                </div>
+      // ======== INICIALIZAÇÃO GOOGLE IDENTITY ========
+      function initGoogleAuth() {
+        if (typeof google === 'undefined' || !google.accounts) {
+          console.warn('Google Identity Services ainda não carregado. Tentando novamente...');
+          setTimeout(initGoogleAuth, 300);
+          return;
+        }
 
-                <article class="bg-white border rounded-lg shadow-sm post-item">
-                    <div class="p-3 flex items-center justify-between">
-                        <div class="flex items-center space-x-2">
-                            <img src="https://picsum.photos/seed/galera/100" class="w-9 h-9 rounded-full object-cover" alt="User">
-                            <span class="font-semibold text-sm">saudades_da_epoca</span>
-                        </div>
-                        <i class="fa fa-ellipsis-h cursor-pointer"></i>
-                    </div>
-                    <div class="w-full">
-                        <img src="https://picsum.photos/seed/orkut/800/600" class="w-full object-cover" alt="Post image">
-                    </div>
-                    <div class="p-3">
-                        <div class="flex justify-between items-center mb-2">
-                            <div class="flex space-x-4">
-                                <i class="fa fa-heart-o text-2xl cursor-pointer heart-btn heart-animation"></i>
-                                <i class="fa fa-comment-o text-2xl cursor-pointer comment-btn"></i>
-                                <i class="fa fa-paper-plane-o text-2xl cursor-pointer"></i>
-                            </div>
-                            <i class="fa fa-bookmark-o text-2xl cursor-pointer save-btn"></i>
-                        </div>
-                        <p class="font-semibold text-sm mb-1 like-count">Curtido por <span class="text-orkut-dark">amiga1</span> e outras pessoas</p>
-                        <div class="text-sm mb-3">
-                            <span class="font-semibold mr-1">saudades_da_epoca</span> 
-                            Quem lembra? #Nostalgia #OrkutForever 🟣🟡
-                        </div>
-                        <div class="comments-section hidden border-t border-gray-100 pt-3 mt-2">
-                            <p class="text-xs text-gray-500 mb-2">Comentários:</p>
-                            <div class="comment-list space-y-2 mb-3"></div>
-                            <div class="flex gap-2">
-                                <input type="text" placeholder="Escreva um depoimento..." class="flex-1 text-sm border rounded px-2 py-1 focus:outline-none focus:border-orkut-purple">
-                                <button class="text-xs bg-orkut-purple text-white px-3 py-1 rounded post-comment">Publicar</button>
-                            </div>
-                        </div>
-                        <p class="text-gray-400 text-xs mt-2 uppercase">Há 2 horas</p>
-                    </div>
-                </article>
+        google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleCredentialResponse,
+          auto_select: false,
+          cancel_on_tap_outside: true,
+        });
 
-                <article class="bg-white border rounded-lg shadow-sm post-item">
-                    <div class="p-3 flex items-center justify-between">
-                        <div class="flex items-center space-x-2">
-                            <img src="https://picsum.photos/seed/dev/100" class="w-9 h-9 rounded-full object-cover" alt="User">
-                            <span class="font-semibold text-sm">web_design_br</span>
-                        </div>
-                        <i class="fa fa-ellipsis-h cursor-pointer"></i>
-                    </div>
-                    <div class="w-full">
-                        <img src="https://picsum.photos/seed/code/800/600" class="w-full object-cover" alt="Post image">
-                    </div>
-                    <div class="p-3">
-                        <div class="flex justify-between items-center mb-2">
-                            <div class="flex space-x-4">
-                                <i class="fa fa-heart-o text-2xl cursor-pointer heart-btn heart-animation"></i>
-                                <i class="fa fa-comment-o text-2xl cursor-pointer comment-btn"></i>
-                                <i class="fa fa-paper-plane-o text-2xl cursor-pointer"></i>
-                            </div>
-                            <i class="fa fa-bookmark-o text-2xl cursor-pointer save-btn"></i>
-                        </div>
-                        <p class="font-semibold text-sm mb-1 like-count">Curtido por <span class="text-orkut-dark">devs</span> e outras pessoas</p>
-                        <div class="text-sm mb-3">
-                            <span class="font-semibold mr-1">web_design_br</span> 
-                            Layout novo, mesma essência! ✨
-                        </div>
-                        <div class="comments-section hidden border-t border-gray-100 pt-3 mt-2">
-                            <p class="text-xs text-gray-500 mb-2">Comentários:</p>
-                            <div class="comment-list space-y-2 mb-3"></div>
-                            <div class="flex gap-2">
-                                <input type="text" placeholder="Escreva um depoimento..." class="flex-1 text-sm border rounded px-2 py-1 focus:outline-none focus:border-orkut-purple">
-                                <button class="text-xs bg-orkut-purple text-white px-3 py-1 rounded post-comment">Publicar</button>
-                            </div>
-                        </div>
-                        <p class="text-gray-400 text-xs mt-2 uppercase">Há 1 dia</p>
-                    </div>
-                </article>
+        // Associar o clique do botão customizado ao prompt do Google
+        customGoogleBtn.addEventListener('click', () => {
+          google.accounts.id.prompt((notification) => {
+            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+              // Se o One Tap não aparecer, força o popup tradicional
+              google.accounts.id.prompt();
+            }
+          });
+        });
 
-            </div>
+        // Também podemos tentar exibir o One Tap automaticamente (discreto)
+        google.accounts.id.prompt();
+        
+        console.log('✅ Google Identity inicializado com sucesso.');
+      }
 
-            <div class="hidden md:block pt-4">
-                <div class="fixed w-80">
-                    <div class="flex items-center justify-between mb-6">
-                        <div class="flex items-center space-x-3">
-                            <img id="profilePicture" src="https://picsum.photos/seed/meuperfil/100" class="w-14 h-14 rounded-full object-cover border-2 border-orkut-yellow" alt="Profile">
-                            <div>
-                                <p id="profileName" class="font-semibold">seu_nome</p>
-                                <p class="text-gray-500 text-sm">Membro desde 2026</p>
-                            </div>
-                        </div>
-                        <button class="text-xs font-semibold text-orkut-purple edit-profile">Editar</button>
-                    </div>
+      // ======== CALLBACK APÓS LOGIN ========
+      function handleCredentialResponse(response) {
+        try {
+          // Decodificar o token JWT retornado pelo Google
+          const credential = response.credential;
+          const payload = parseJwt(credential);
+          
+          if (!payload) {
+            throw new Error('Não foi possível decodificar as credenciais.');
+          }
 
-                    <div class="mb-6">
-                        <div class="flex justify-between items-center mb-3">
-                            <h3 class="text-sm font-semibold text-gray-500">Minhas Comunidades</h3>
-                            <a href="#" class="text-xs font-semibold text-gray-700">Ver todas</a>
-                        </div>
-                        <div class="space-y-4">
-                            <div class="flex items-center space-x-2 community-item cursor-pointer">
-                                <div class="w-9 h-9 rounded-full bg-orkut-light flex items-center justify-center text-orkut-dark">
-                                    <i class="fa fa-code"></i>
-                                </div>
-                                <div class="flex-1">
-                                    <p class="text-sm font-semibold">HTML5 e CSS3</p>
+          console.log('🔓 Usuário autenticado:', payload);
+
+          // Exibir informações do usuário
+          const userName = payload.name || 'Usuário';
+          const userEmail = payload.email;
+          const userPicture = payload.picture;
+          const firstName = payload.given_name || userName.split(' ')[0];
+
+          // Atualizar interface
+          userNameDisplay.textContent = `${userName} (${userEmail})`;
+          
+          if (userPicture) {
+            userAvatar.innerHTML = `<img src="${userPicture}" alt="Avatar" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">`;
+          } else {
+            userAvatar.textContent = firstName.charAt(0).toUpperCase();
+          }
+
+          // Salvar sessão local (opcional)
+          localStorage.setItem('orkut_user', JSON.stringify({
+            name: userName,
+            email: userEmail,
+            picture: userPicture,
+            loginTime: Date.now()
+          }));
+
+          // Trocar telas
+          loginScreen.classList.add('hidden');
+          welcomeScreen.style.display = 'block';
+          errorDiv.classList.add('hidden');
+
+        } catch (error) {
+          console.error('❌ Erro no processamento do login:', error);
+          showError('Falha ao processar o login. Tente novamente.');
+        }
+      }
+
+      // ======== DECODIFICAR JWT ========
+      function parseJwt(token) {
+        try {
+          const base64Url = token.split('.')[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(
+            atob(base64)
+              .split('')
+              .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+              .join('')
+          );
+          return JSON.parse(jsonPayload);
+        } catch (e) {
+          console.error('Erro ao decodificar JWT:', e);
+          return null;
+        }
+      }
+
+      // ======== LOGOUT ========
+      function logout() {
+        // Limpar armazenamento local
+        localStorage.removeItem('orkut_user');
+        
+        // Desabilitar login automático futuro (revogar)
+        if (window.google && google.accounts) {
+          google.accounts.id.disableAutoSelect();
+        }
+        
+        // Voltar para tela de login
+        welcomeScreen.style.display = 'none';
+        loginScreen.classList.remove('hidden');
+        
+        // Resetar elementos
+        userAvatar.innerHTML = '';
+        userNameDisplay.textContent = '';
+        
+        console.log('👋 Logout realizado.');
+        
+        // Pequeno truque para reiniciar o estado Google Identity
+        setTimeout(() => {
+          if (window.google && google.accounts) {
+            google.accounts.id.initialize({
+              client_id: GOOGLE_CLIENT_ID,
+              callback: handleCredentialResponse,
+              auto_select: false,
+            });
+          }
+        }, 300);
+      }
+
+      // ======== EXIBIR ERRO ========
+      function showError(message) {
+        errorDiv.textContent = message;
+        errorDiv.classList.remove('hidden');
+      }
+
+      // ======== VERIFICAR SESSÃO EXISTENTE ========
+      function checkExistingSession() {
+        const savedUser = localStorage.getItem('orkut_user');
+        if (savedUser) {
+          try {
+            const user = JSON.parse(savedUser);
+            // Verificar se login é recente (menos de 1 hora)
+            if (Date.now() - user.loginTime < 3600000) {
+              userNameDisplay.textContent = `${user.name} (${user.email})`;
+              if (user.picture) {
+                userAvatar.innerHTML = `<img src="${user.picture}" alt="Avatar" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">`;
+              } else {
+                userAvatar.textContent = user.name.charAt(0).toUpperCase();
+              }
+              loginScreen.classList.add('hidden');
+              welcomeScreen.style.display = 'block';
+              return true;
+            }
+          } catch (e) {
+            localStorage.removeItem('orkut_user');
+          }
+        }
+        return false;
+      }
+
+      // ======== EVENT LISTENERS ========
+      logoutBtn.addEventListener('click', logout);
+
+      // ======== INICIAR TUDO ========
+      window.addEventListener('load', () => {
+        // Verificar se já existe sessão ativa
+        if (!checkExistingSession()) {
+          // Inicializar autenticação Google
+          initGoogleAuth();
+        }
+
+        // Fallback: se o Google Identity demorar, tentar novamente
+        setTimeout(() => {
+          if (!window.google || !google.accounts) {
+            console.warn('Google Identity Services não carregou. Verifique a conexão.');
+            showError('Serviço de autenticação indisponível. Recarregue a página.');
+          }
+        }, 5000);
+      });
+
+    })();
+  </script>
+</body>
+</html>
