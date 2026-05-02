@@ -11,50 +11,52 @@
 
     <style>
         :root { 
-            --orkut-bg: #D4DDED; 
-            --orkut-blue-header: #BFD0EA;
             --orkut-pink: #ED2590; 
-            --dark-blue: #5d7eb9;
-            --border: #A7BBDD;
+            --orkut-pink-light: #fce9f3;
+            --orkut-pink-dark: #b01c6a;
+            --bg: #fff0f6;
+            --border: #f9badb;
         }
         
-        body { font-family: "Lucida Grande", Tahoma, Arial, sans-serif; background: var(--orkut-bg); margin: 0; padding-bottom: 70px; color: #333; }
+        body { font-family: "Lucida Grande", Tahoma, Arial, sans-serif; background: var(--bg); margin: 0; padding-bottom: 70px; color: #444; }
         
-        /* HEADER E BUSCA */
-        header { position: fixed; top: 0; width: 100%; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        nav { background: var(--dark-blue); height: 45px; display: flex; justify-content: center; align-items: center; border-bottom: 1px solid #3b5998; }
-        .logo { color: white; font-size: 24px; font-weight: bold; font-style: italic; text-decoration: none; }
+        /* HEADER ROSA */
+        header { position: fixed; top: 0; width: 100%; z-index: 1000; box-shadow: 0 2px 10px rgba(237, 37, 144, 0.2); }
+        nav { background: var(--orkut-pink); height: 50px; display: flex; justify-content: center; align-items: center; }
+        .logo { color: white; font-size: 26px; font-weight: bold; font-style: italic; text-decoration: none; }
         
-        .search-bar-container { background: #fff; padding: 8px 15px; border-bottom: 1px solid var(--border); display: flex; justify-content: center; }
-        .search-input { width: 100%; max-width: 570px; border: 1px solid #ccc; padding: 6px 12px; border-radius: 20px; font-size: 13px; outline: none; background: #f1f1f1; }
+        .search-bar-container { background: #fff; padding: 10px; border-bottom: 1px solid var(--border); display: flex; justify-content: center; }
+        .search-input { width: 100%; max-width: 500px; border: 1px solid var(--border); padding: 8px 15px; border-radius: 20px; font-size: 13px; outline: none; background: var(--orkut-pink-light); }
 
-        /* CONTEÚDO PRINCIPAL */
-        main { width: 100%; max-width: 600px; margin: 105px auto 0; padding: 10px; box-sizing: border-box; }
+        main { width: 100%; max-width: 550px; margin: 115px auto 0; padding: 10px; box-sizing: border-box; }
         
-        /* BOTTOM NAV (ESTILO INSTAGRAM) */
-        .bottom-nav { 
-            position: fixed; bottom: 0; width: 100%; height: 55px; 
-            background: #fff; border-top: 1px solid var(--border); 
-            display: flex; justify-content: space-around; align-items: center; z-index: 1000;
-        }
-        .nav-item { cursor: pointer; display: flex; flex-direction: column; align-items: center; color: #555; transition: 0.2s; }
-        .nav-item.active { color: var(--orkut-pink); }
-        .nav-item span { font-size: 10px; font-weight: bold; margin-top: 2px; }
+        /* ÁREA DE POSTAGEM MELHORADA */
+        .post-box { background: #fff; border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .post-box textarea { width: 100%; border: 1px solid var(--border); padding: 10px; border-radius: 4px; resize: none; font-family: inherit; margin-bottom: 10px; box-sizing: border-box; }
+        .post-box textarea:focus { border-color: var(--orkut-pink); outline: none; }
+        
+        .preview-img-box { width: 100%; max-height: 200px; object-fit: cover; border-radius: 4px; margin-bottom: 10px; display: none; border: 1px solid var(--border); }
 
-        /* CARDS E POSTS */
-        .post-card { background: #fff; border: 1px solid var(--border); margin-bottom: 15px; border-radius: 4px; animation: fadeIn 0.3s; }
-        .post-header { display: flex; align-items: center; justify-content: space-between; padding: 8px; background: var(--orkut-blue-header); }
-        .user-pic { width: 32px; height: 32px; border: 1px solid #fff; object-fit: cover; }
-        .post-img { width: 100%; display: block; max-height: 500px; object-fit: contain; background: #000; }
-        .post-text { padding: 10px; font-size: 13px; }
+        .post-actions-btns { display: flex; justify-content: space-between; align-items: center; }
+        .btn-post { background: var(--orkut-pink); color: #fff; border: none; padding: 8px 20px; border-radius: 20px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-post:hover { background: var(--orkut-pink-dark); }
+        .btn-media { color: var(--orkut-pink); font-size: 12px; font-weight: bold; cursor: pointer; text-decoration: underline; }
 
-        /* MODAL */
-        #modal-overlay { position: fixed; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 2000; }
-        .modal-box { background: #fff; border: 2px solid var(--dark-blue); width: 280px; border-radius: 4px; }
-        .modal-footer { padding: 10px; display: flex; justify-content: center; gap: 8px; background: #f0f4f8; }
+        /* CARDS DO FEED */
+        .post-card { background: #fff; border: 1px solid var(--border); margin-bottom: 20px; border-radius: 8px; overflow: hidden; }
+        .post-header { display: flex; align-items: center; padding: 10px; background: var(--orkut-pink-light); gap: 10px; }
+        .user-pic { width: 35px; height: 35px; border-radius: 50%; border: 2px solid var(--orkut-pink); object-fit: cover; }
+        .post-img { width: 100%; display: block; max-height: 500px; object-fit: contain; background: #fff; }
+        .post-text { padding: 15px; font-size: 14px; line-height: 1.5; }
+
+        /* BARRA INFERIOR */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 60px; background: #fff; border-top: 2px solid var(--orkut-pink); display: flex; justify-content: space-around; align-items: center; z-index: 1000; }
+        .nav-item { cursor: pointer; color: #999; text-align: center; flex: 1; padding: 10px; transition: 0.3s; }
+        .nav-item.active { color: var(--orkut-pink); background: var(--orkut-pink-light); }
+        .nav-item svg { width: 24px; height: 24px; }
+        .nav-item span { display: block; font-size: 11px; font-weight: bold; }
 
         .hidden { display: none !important; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -62,22 +64,26 @@
 <header id="main-header" class="hidden">
     <nav><a href="#" class="logo">orkut</a></nav>
     <div class="search-bar-container">
-        <input type="text" id="search-input" class="search-input" placeholder="Pesquisar no orkut..." oninput="filtrarBusca(this.value)">
+        <input type="text" id="search-input" class="search-input" placeholder="Pesquisar no orkut rosa..." oninput="filtrarBusca(this.value)">
     </div>
 </header>
 
 <main>
-    <div id="login-screen" style="background:#fff; padding:40px; border:1px solid var(--border); text-align:center;">
-        <h2 style="color:var(--dark-blue)">entrar no orkut</h2>
+    <div id="login-screen" style="background:#fff; padding:50px; border:1px solid var(--border); text-align:center; border-radius:8px;">
+        <h2 style="color:var(--orkut-pink)">bem-vindo ao novo orkut</h2>
         <div id="g_id_onload" data-client_id="8393724573-kdnas52bjnhjvtkhahtqchm1p000b0i4.apps.googleusercontent.com" data-callback="handleLogin"></div>
         <div class="g_id_signin" data-type="standard"></div>
     </div>
 
     <div id="app-content" class="hidden">
-        <div id="create-post-area" class="post-box" style="background:#fff; padding:15px; border:1px solid var(--border); margin-bottom:20px;">
-             <textarea id="post-input" style="width:100%; border:1px solid #ccc; padding:8px; margin-bottom:8px;" placeholder="O que você quer compartilhar?"></textarea>
-             <input type="file" id="file-input" class="hidden" onchange="enviarPost(this)">
-             <button class="btn-post" onclick="document.getElementById('file-input').click()" style="background:var(--orkut-pink); color:#fff; border:none; padding:5px 15px; font-weight:bold; cursor:pointer;">POSTAR FOTO</button>
+        <div class="post-box">
+            <img id="preview-img" class="preview-img-box">
+            <textarea id="post-input" placeholder="Escreva um scrap ou poste uma foto..."></textarea>
+            <div class="post-actions-btns">
+                <label for="file-input" class="btn-media">📷 ADICIONAR FOTO</label>
+                <input type="file" id="file-input" class="hidden" onchange="mostrarPreview(this)">
+                <button id="btn-send" class="btn-post" onclick="enviarConteudo()">POSTAR</button>
+            </div>
         </div>
         <div id="feed"></div>
     </div>
@@ -85,17 +91,16 @@
 
 <div id="bottom-nav" class="bottom-nav hidden">
     <div class="nav-item active" id="nav-home" onclick="mudarAba('recente')">
-        <svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z" /></svg>
+        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M10,20V14H14V20H19V12H22L12,3L2,12H5V20H10Z" /></svg>
         <span>Início</span>
     </div>
     <div class="nav-item" id="nav-explorar" onclick="mudarAba('relevante')">
-        <svg style="width:24px;height:24px" viewBox="0 0 24 24"><path fill="currentColor" d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5A4.5,4.5 0 0,0 5,9.5A4.5,4.5 0 0,0 9.5,14A4.5,4.5 0 0,0 14,9.5A4.5,4.5 0 0,0 9.5,5Z" /></svg>
+        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5A4.5,4.5 0 0,0 5,9.5A4.5,4.5 0 0,0 9.5,14A4.5,4.5 0 0,0 14,9.5A4.5,4.5 0 0,0 9.5,5Z" /></svg>
         <span>Explorar</span>
     </div>
 </div>
 
 <script>
-    // Config Firebase (Mantenha as suas chaves aqui)
     const firebaseConfig = {
         apiKey: "AIzaSyDwtEYsXqq5Ed131USZ9tZhFqaJvD0480M",
         authDomain: "fir-75fa8.firebaseapp.com",
@@ -109,7 +114,7 @@
     const storage = firebase.storage();
     
     let userAtual = null;
-    let abaAtual = 'recente'; // 'recente' ou 'relevante'
+    let abaAtual = 'recente';
 
     function handleLogin(response) {
         const payload = JSON.parse(atob(response.credential.split('.')[1]));
@@ -121,46 +126,58 @@
         carregarPosts();
     }
 
-    function mudarAba(tipo) {
-        abaAtual = tipo;
-        document.getElementById('nav-home').classList.toggle('active', tipo === 'recente');
-        document.getElementById('nav-explorar').classList.toggle('active', tipo === 'relevante');
-        carregarPosts();
+    function mostrarPreview(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                const img = document.getElementById('preview-img');
+                img.src = e.target.result;
+                img.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 
-    async function enviarPost(input) {
-        const file = input.files[0];
+    async function enviarConteudo() {
         const txt = document.getElementById('post-input').value;
-        if(!file) return;
+        const file = document.getElementById('file-input').files[0];
+        const btn = document.getElementById('btn-send');
 
+        if (!txt.trim() && !file) return;
+        btn.disabled = true;
+
+        let url = "";
         try {
-            const ref = storage.ref().child(`posts/${userAtual.id}/${Date.now()}`);
-            await ref.put(file);
-            const url = await ref.getDownloadURL();
+            if (file) {
+                const ref = storage.ref().child(`posts/${userAtual.id}/${Date.now()}`);
+                await ref.put(file);
+                url = await ref.getDownloadURL();
+            }
 
             await db.collection("posts").add({
                 uid: userAtual.id, nome: userAtual.name, foto: userAtual.photo,
                 texto: txt, imagemPost: url, data: firebase.firestore.FieldValue.serverTimestamp(),
                 likes: 0
             });
+
             document.getElementById('post-input').value = "";
-            input.value = "";
-        } catch(e) { console.error(e); }
+            document.getElementById('file-input').value = "";
+            document.getElementById('preview-img').style.display = 'none';
+        } catch (e) { alert("Erro ao postar"); }
+        btn.disabled = false;
     }
 
-    function filtrarBusca(termo) {
-        const cards = document.querySelectorAll('.post-card');
-        const t = termo.toLowerCase();
-        cards.forEach(card => {
-            const content = card.innerText.toLowerCase();
-            card.style.display = content.includes(t) ? 'block' : 'none';
-        });
+    function mudarAba(tipo) {
+        abaAtual = tipo;
+        document.getElementById('nav-home').classList.toggle('active', tipo === 'recente');
+        document.getElementById('nav-explorar').classList.toggle('active', tipo === 'relevante');
+        carregarPosts(); // Recarrega com a nova ordenação
     }
 
     function carregarPosts() {
-        // LÓGICA EXPLORAR: No relevante, ordena por 'likes'. No recente, por 'data'.
         let query = db.collection("posts");
         
+        // CORREÇÃO EXPLORAR: Ordenação real
         if (abaAtual === 'relevante') {
             query = query.orderBy("likes", "desc");
         } else {
@@ -172,19 +189,21 @@
             feed.innerHTML = "";
             snap.forEach(doc => {
                 const p = doc.data();
+                const id = doc.id;
                 feed.innerHTML += `
                     <div class="post-card">
                         <div class="post-header">
-                            <div style="display:flex;align-items:center;gap:8px">
-                                <img src="${p.foto}" class="user-pic">
-                                <span style="font-weight:bold;color:#3b5998;font-size:12px">${p.nome}</span>
-                            </div>
-                            ${abaAtual === 'relevante' ? `<span style="color:var(--orkut-pink);font-size:10px;font-weight:bold">🔥 POPULAR</span>` : ''}
+                            <img src="${p.foto}" class="user-pic">
+                            <span style="font-weight:bold; font-size:13px;">${p.nome}</span>
                         </div>
-                        <img src="${p.imagemPost}" class="post-img">
-                        <div class="post-text"><strong>${p.nome}:</strong> ${p.texto}</div>
-                        <div style="padding:10px; border-top:1px solid #eee; display:flex; gap:15px">
-                            <span onclick="curtir('${doc.id}')" style="cursor:pointer">❤️ ${p.likes || 0}</span>
+                        ${p.imagemPost ? `<img src="${p.imagemPost}" class="post-img">` : ''}
+                        <div class="post-text">
+                            ${p.texto ? `<strong>${p.nome}:</strong> ${p.texto}` : ''}
+                        </div>
+                        <div style="padding:10px; border-top:1px solid var(--orkut-pink-light);">
+                            <button onclick="curtir('${id}')" style="background:none; border:none; cursor:pointer; color:var(--orkut-pink); font-weight:bold;">
+                                ❤️ ${p.likes || 0} Curtidas
+                            </button>
                         </div>
                     </div>`;
             });
@@ -194,6 +213,14 @@
     async function curtir(id) {
         await db.collection("posts").doc(id).update({
             likes: firebase.firestore.FieldValue.increment(1)
+        });
+    }
+
+    function filtrarBusca(val) {
+        const termo = val.toLowerCase();
+        const cards = document.querySelectorAll('.post-card');
+        cards.forEach(card => {
+            card.style.display = card.innerText.toLowerCase().includes(termo) ? 'block' : 'none';
         });
     }
 </script>
