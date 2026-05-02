@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>orkut</title>
+    <title>orkut / instagram clone</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
     <style>
         :root { --orkut-blue: #5d7eb9; --orkut-pink: #ED2590; --border: #dbdbdb; }
@@ -15,7 +16,7 @@
         nav { background: #fff; width: 100%; height: 60px; display: flex; justify-content: center; border-bottom: 1px solid var(--border); position: fixed; top: 0; z-index: 100; }
         .nav-content { width: 100%; max-width: 935px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
         
-        main { width: 100%; max-width: 600px; margin-top: 80px; padding: 10px; }
+        main { width: 100%; max-width: 600px; margin-top: 80px; padding: 10px; box-sizing: border-box; }
         
         #login-screen { background: #fff; border: 1px solid var(--border); padding: 40px; text-align: center; border-radius: 8px; margin-top: 50px; }
         
@@ -23,13 +24,17 @@
         textarea { width: 100%; border: none; font-size: 16px; outline: none; margin-bottom: 10px; resize: none; font-family: inherit; }
         
         .btn-post { background: var(--orkut-blue); color: #fff; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; float: right; font-weight: bold; }
+        .btn-post:disabled { background: #ccc; cursor: not-allowed; }
         .btn-logout { background: none; border: 1px solid #ccc; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; }
 
-        .post-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; padding: 15px; }
-        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-weight: 600; color: var(--orkut-blue); }
+        .post-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; padding: 0 0 15px 0; overflow: hidden; }
+        .post-header { display: flex; align-items: center; gap: 10px; padding: 15px; font-weight: 600; color: var(--orkut-blue); }
+        .post-content { padding: 0 15px 10px 15px; font-size: 15px; line-height: 1.4; }
         .user-pic { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+        .post-img { width: 100%; display: block; }
         
         .hidden { display: none !important; }
+        #preview-img { width: 100%; border-radius: 8px; margin-bottom: 10px; object-fit: cover; max-height: 300px; }
     </style>
 </head>
 <body>
@@ -59,7 +64,17 @@
     <div id="app-content" class="hidden">
         <div class="post-box">
             <textarea id="post-input" placeholder="No que você está pensando?" rows="3"></textarea>
-            <button class="btn-post" onclick="enviarPost()">Publicar</button>
+            
+            <img id="preview-img" class="hidden">
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 10px;">
+                <label for="file-input" style="cursor: pointer; color: var(--orkut-blue); font-weight: bold;">
+                    📷 <span style="font-size: 14px;">Adicionar Foto</span>
+                </label>
+                <input type="file" id="file-input" accept="image/*" class="hidden" onchange="mostrarPreview(this)">
+                
+                <button id="btn-publicar" class="btn-post" onclick="enviarPost()">Publicar</button>
+            </div>
             <div style="clear:both"></div>
         </div>
         <div id="feed"></div>
@@ -67,32 +82,30 @@
 </main>
 
 <script>
-    // CONFIGURAÇÃO FIREBASE (SUAS CHAVES)
+    // CONFIGURAÇÃO FIREBASE
     const firebaseConfig = {
         apiKey: "AIzaSyDwtEYsXqq5Ed131USZ9tZhFqaJvD0480M",
         authDomain: "fir-75fa8.firebaseapp.com",
         projectId: "fir-75fa8",
-        storageBucket: "fir-75fa8.firebasestorage.app",
+        storageBucket: "fir-75fa8.appspot.com", // Ajustado para o padrão
         messagingSenderId: "390149251555",
         appId: "1:390149251555:web:6471327ebf6c42cced00d6"
     };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const storage = firebase.storage();
     let userAtual = null;
 
-    // LIMPEZA DE SESSÃO AO CARREGAR (Evita erros de cookies presos)
     window.onload = function () {
         google.accounts.id.disableAutoSelect();
     };
 
-    // CALLBACK DE LOGIN
     function handleLogin(response) {
         try {
             const payload = JSON.parse(atob(response.credential.split('.')[1]));
-            userAtual = { name: payload.name, photo: payload.picture };
+            userAtual = { name: payload.name, photo: payload.picture, email: payload.email };
 
-            // Troca de Telas
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('app-content').classList.remove('hidden');
             document.getElementById('user-nav').classList.remove('hidden');
@@ -101,76 +114,88 @@
             carregarPosts();
         } catch (e) {
             console.error("Erro ao processar login:", e);
-            logout(); // Limpa tudo se der erro
+            logout();
         }
     }
 
-    // FUNÇÃO DE LOGOUT E LIMPEZA DE COOKIES
     function logout() {
         google.accounts.id.disableAutoSelect();
-        google.accounts.id.revoke(userAtual ? userAtual.email : '', done => {
-            console.log('Sessão revogada');
-        });
-        
-        // Reset visual e limpeza de variáveis
         userAtual = null;
-        location.reload(); // Recarrega a página limpando o estado do script
+        location.reload();
     }
 
-    // ENVIAR POST
-    function enviarPost() {
+    function mostrarPreview(input) {
+        const preview = document.getElementById('preview-img');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    async function enviarPost() {
         const txt = document.getElementById('post-input').value;
-        if (!txt.trim() || !userAtual) return;
+        const file = document.getElementById('file-input').files[0];
+        const btn = document.getElementById('btn-publicar');
 
-        db.collection("posts").add({
-            nome: userAtual.name,
-            foto: userAtual.photo,
-            texto: txt,
-            data: firebase.firestore.FieldValue.serverTimestamp()
-        }).then(() => {
-            document.getElementById('post-input').value = "";
-        }).catch(err => {
-            console.error(err);
-            alert("Erro de permissão! Verifique as regras (Rules) do Firestore.");
-        });
-    }
+        if ((!txt.trim() && !file) || !userAtual) return;
 
-    // CARREGAR FEED
-    function carregarPosts() {
-        db.collection("posts").orderBy("data", "desc").onSnapshot(snapshot => {
-            const feed = document.getElementById('feed');
-            feed.innerHTML = "";
-            snapshot.forEach(doc => {
-                const p = doc.data();
-                feed.innerHTML += `
-                    <div class="post-card">
-                        <div class="post-header">
-                            <img src="${p.foto}" class="user-pic">
-                            <span>${p.nome}</span>
-                        </div>
-                        <div style="font-size: 15px; line-height: 1.4;">${p.texto}</div>
-                    </div>
-                `;
+        btn.disabled = true;
+        btn.innerText = "Enviando...";
+
+        let urlImagem = "";
+
+        try {
+            if (file) {
+                const nomeArquivo = `posts/${Date.now()}_${userAtual.name.replace(/\s/g, '_')}`;
+                const ref = storage.ref().child(nomeArquivo);
+                await ref.put(file);
+                urlImagem = await ref.getDownloadURL();
+            }
+
+            await db.collection("posts").add({
+                nome: userAtual.name,
+                foto: userAtual.photo,
+                texto: txt,
+                imagemPost: urlImagem,
+                data: firebase.firestore.FieldValue.serverTimestamp()
             });
-        });
-    }
-</script>
 
-</body>
-</html>
+            // Resetar formulário
+            document.getElementById('post-input').value = "";
+            document.getElementById('file-input').value = "";
+            document.getElementById('preview-img').classList.add('hidden');
+            
+        } catch (err) {
+            console.error(err);
+            alert("Erro ao publicar! Verifique as regras do Storage/Firestore.");
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Publicar";
+        }
+    }
+
     function carregarPosts() {
         db.collection("posts").orderBy("data", "desc").onSnapshot(snapshot => {
             const feed = document.getElementById('feed');
             feed.innerHTML = "";
             snapshot.forEach(doc => {
                 const p = doc.data();
+                const imagemHTML = p.imagemPost ? `<img src="${p.imagemPost}" class="post-img">` : "";
+                
                 feed.innerHTML += `
                     <div class="post-card">
                         <div class="post-header">
                             <img src="${p.foto}" class="user-pic">
                             <span>${p.nome}</span>
                         </div>
-                        <div>${p.texto}</div>
+                        ${imagemHTML}
+                        <div class="post-content">
+                            <strong>${p.nome}</strong> ${p.texto}
+                        </div>
                     </div>
                 `;
             });
