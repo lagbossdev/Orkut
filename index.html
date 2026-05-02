@@ -10,17 +10,25 @@
 
     <style>
         :root { --orkut-blue: #5d7eb9; --orkut-pink: #ED2590; --border: #dbdbdb; }
-        body { font-family: sans-serif; background: #fafafa; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: #fafafa; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        
         nav { background: #fff; width: 100%; height: 60px; display: flex; justify-content: center; border-bottom: 1px solid var(--border); position: fixed; top: 0; z-index: 100; }
         .nav-content { width: 100%; max-width: 935px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+        
         main { width: 100%; max-width: 600px; margin-top: 80px; padding: 10px; }
+        
         #login-screen { background: #fff; border: 1px solid var(--border); padding: 40px; text-align: center; border-radius: 8px; margin-top: 50px; }
+        
         .post-box { background: #fff; border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-        textarea { width: 100%; border: none; font-size: 16px; outline: none; margin-bottom: 10px; }
+        textarea { width: 100%; border: none; font-size: 16px; outline: none; margin-bottom: 10px; resize: none; font-family: inherit; }
+        
         .btn-post { background: var(--orkut-blue); color: #fff; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; float: right; font-weight: bold; }
-        .post-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; padding: 12px; }
-        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-weight: bold; color: var(--orkut-blue); }
-        .user-pic { width: 35px; height: 35px; border-radius: 50%; }
+        .btn-logout { background: none; border: 1px solid #ccc; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; }
+
+        .post-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; padding: 15px; }
+        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-weight: 600; color: var(--orkut-blue); }
+        .user-pic { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+        
         .hidden { display: none !important; }
     </style>
 </head>
@@ -29,7 +37,8 @@
 <nav>
     <div class="nav-content">
         <span style="font-size: 24px; font-weight: bold; color: var(--orkut-pink);">orkut</span>
-        <div id="user-nav" class="hidden">
+        <div id="user-nav" class="hidden" style="display: flex; align-items: center; gap: 10px;">
+            <button class="btn-logout" onclick="logout()">Sair</button>
             <img id="nav-avatar" class="user-pic" src="">
         </div>
     </div>
@@ -38,17 +47,18 @@
 <main>
     <div id="login-screen">
         <h2 style="color: var(--orkut-blue);">Entrar no orkut</h2>
-        <p>Use sua conta do Google para continuar</p><br>
+        <p style="color: #666;">Conecte-se para ver as postagens reais</p><br>
         <div id="g_id_onload"
              data-client_id="8393724573-kdnas52bjnhjvtkhahtqchm1p000b0i4.apps.googleusercontent.com"
-             data-callback="handleLogin">
+             data-callback="handleLogin"
+             data-auto_prompt="false">
         </div>
         <div class="g_id_signin" data-type="standard" data-shape="pill"></div>
     </div>
 
     <div id="app-content" class="hidden">
         <div class="post-box">
-            <textarea id="post-input" placeholder="O que você quer contar?" rows="3"></textarea>
+            <textarea id="post-input" placeholder="No que você está pensando?" rows="3"></textarea>
             <button class="btn-post" onclick="enviarPost()">Publicar</button>
             <div style="clear:both"></div>
         </div>
@@ -57,7 +67,7 @@
 </main>
 
 <script>
-    // CONFIGURAÇÃO FIREBASE
+    // CONFIGURAÇÃO FIREBASE (SUAS CHAVES)
     const firebaseConfig = {
         apiKey: "AIzaSyDwtEYsXqq5Ed131USZ9tZhFqaJvD0480M",
         authDomain: "fir-75fa8.firebaseapp.com",
@@ -71,26 +81,46 @@
     const db = firebase.firestore();
     let userAtual = null;
 
-    // FUNÇÃO DE LOGIN (CHAMADA PELO GOOGLE)
+    // LIMPEZA DE SESSÃO AO CARREGAR (Evita erros de cookies presos)
+    window.onload = function () {
+        google.accounts.id.disableAutoSelect();
+    };
+
+    // CALLBACK DE LOGIN
     function handleLogin(response) {
-        console.log("Resposta recebida do Google");
-        const payload = JSON.parse(atob(response.credential.split('.')[1]));
-        
-        userAtual = { name: payload.name, photo: payload.picture };
+        try {
+            const payload = JSON.parse(atob(response.credential.split('.')[1]));
+            userAtual = { name: payload.name, photo: payload.picture };
 
-        // Troca visual de telas
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('app-content').classList.remove('hidden');
-        document.getElementById('user-nav').classList.remove('hidden');
-        document.getElementById('nav-avatar').src = payload.picture;
+            // Troca de Telas
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app-content').classList.remove('hidden');
+            document.getElementById('user-nav').classList.remove('hidden');
+            document.getElementById('nav-avatar').src = payload.picture;
 
-        carregarPosts();
+            carregarPosts();
+        } catch (e) {
+            console.error("Erro ao processar login:", e);
+            logout(); // Limpa tudo se der erro
+        }
     }
 
-    // ENVIAR POST PARA O BANCO
+    // FUNÇÃO DE LOGOUT E LIMPEZA DE COOKIES
+    function logout() {
+        google.accounts.id.disableAutoSelect();
+        google.accounts.id.revoke(userAtual ? userAtual.email : '', done => {
+            console.log('Sessão revogada');
+        });
+        
+        // Reset visual e limpeza de variáveis
+        userAtual = null;
+        location.reload(); // Recarrega a página limpando o estado do script
+    }
+
+    // ENVIAR POST
     function enviarPost() {
         const txt = document.getElementById('post-input').value;
-        if (!txt.trim()) return;
+        if (!txt.trim() || !userAtual) return;
 
         db.collection("posts").add({
             nome: userAtual.name,
@@ -99,10 +129,35 @@
             data: firebase.firestore.FieldValue.serverTimestamp()
         }).then(() => {
             document.getElementById('post-input').value = "";
-        }).catch(err => alert("Erro ao postar: Verifique as regras do seu Firebase!"));
+        }).catch(err => {
+            console.error(err);
+            alert("Erro de permissão! Verifique as regras (Rules) do Firestore.");
+        });
     }
 
-    // CARREGAR POSTS EM TEMPO REAL
+    // CARREGAR FEED
+    function carregarPosts() {
+        db.collection("posts").orderBy("data", "desc").onSnapshot(snapshot => {
+            const feed = document.getElementById('feed');
+            feed.innerHTML = "";
+            snapshot.forEach(doc => {
+                const p = doc.data();
+                feed.innerHTML += `
+                    <div class="post-card">
+                        <div class="post-header">
+                            <img src="${p.foto}" class="user-pic">
+                            <span>${p.nome}</span>
+                        </div>
+                        <div style="font-size: 15px; line-height: 1.4;">${p.texto}</div>
+                    </div>
+                `;
+            });
+        });
+    }
+</script>
+
+</body>
+</html>
     function carregarPosts() {
         db.collection("posts").orderBy("data", "desc").onSnapshot(snapshot => {
             const feed = document.getElementById('feed');
