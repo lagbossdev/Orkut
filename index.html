@@ -5,133 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>orkut</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
     <style>
-        :root {
-            --orkut-blue: #5d7eb9;
-            --orkut-pink: #ED2590;
-            --bg: #fafafa;
-            --border: #dbdbdb;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-            background-color: var(--bg);
-            color: #262626;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-
-        /* Navbar estilo Instagram */
-        nav {
-            background-color: #fff;
-            width: 100%;
-            height: 60px;
-            display: flex;
-            justify-content: center;
-            border-bottom: 1px solid var(--border);
-            position: fixed;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .nav-content {
-            width: 100%;
-            max-width: 935px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 20px;
-        }
-
-        .logo {
-            font-size: 26px;
-            font-weight: bold;
-            color: var(--orkut-pink);
-            text-decoration: none;
-        }
-
-        main {
-            width: 100%;
-            max-width: 600px;
-            margin-top: 80px;
-            padding: 10px;
-        }
-
-        /* Card Centralizado de Login */
-        #login-screen {
-            background: #fff;
-            border: 1px solid var(--border);
-            padding: 40px 20px;
-            text-align: center;
-            border-radius: 8px;
-            margin-top: 50px;
-        }
-
-        /* Área de Postagem */
-        .post-box {
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-
-        textarea {
-            width: 100%;
-            border: none;
-            resize: none;
-            font-size: 16px;
-            outline: none;
-            margin-bottom: 10px;
-            font-family: inherit;
-        }
-
-        .btn-post {
-            background-color: var(--orkut-blue);
-            color: white;
-            border: none;
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            float: right;
-        }
-
-        /* Posts do Feed */
-        .post-card {
-            background: #fff;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .post-header {
-            padding: 12px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .user-pic {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: #eee;
-        }
-
-        .user-name { font-weight: 600; font-size: 14px; color: var(--orkut-blue); }
-
-        .post-content {
-            padding: 0 12px 15px;
-            font-size: 15px;
-            line-height: 1.5;
-        }
-
+        :root { --orkut-blue: #5d7eb9; --orkut-pink: #ED2590; --border: #dbdbdb; }
+        body { font-family: sans-serif; background: #fafafa; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        nav { background: #fff; width: 100%; height: 60px; display: flex; justify-content: center; border-bottom: 1px solid var(--border); position: fixed; top: 0; z-index: 100; }
+        .nav-content { width: 100%; max-width: 935px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
+        main { width: 100%; max-width: 600px; margin-top: 80px; padding: 10px; }
+        #login-screen { background: #fff; border: 1px solid var(--border); padding: 40px; text-align: center; border-radius: 8px; margin-top: 50px; }
+        .post-box { background: #fff; border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        textarea { width: 100%; border: none; font-size: 16px; outline: none; margin-bottom: 10px; }
+        .btn-post { background: var(--orkut-blue); color: #fff; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; float: right; font-weight: bold; }
+        .post-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; padding: 12px; }
+        .post-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-weight: bold; color: var(--orkut-blue); }
+        .user-pic { width: 35px; height: 35px; border-radius: 50%; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -139,44 +28,36 @@
 
 <nav>
     <div class="nav-content">
-        <a href="#" class="logo">orkut</a>
+        <span style="font-size: 24px; font-weight: bold; color: var(--orkut-pink);">orkut</span>
         <div id="user-nav" class="hidden">
-            <img id="nav-avatar" class="user-pic" src="" alt="Perfil">
+            <img id="nav-avatar" class="user-pic" src="">
         </div>
     </div>
 </nav>
 
 <main>
     <div id="login-screen">
-        <h1 style="color: var(--orkut-blue); margin-bottom: 10px;">orkut</h1>
-        <p style="color: #8e8e8e; margin-bottom: 30px;">Faça login para começar a postar.</p>
-        
-        <div style="display: flex; justify-content: center;">
-            <div id="g_id_onload"
-                 data-client_id="8393724573-kdnas52bjnhjvtkhahtqchm1p000b0i4.apps.googleusercontent.com"
-                 data-callback="handleLogin"
-                 data-auto_prompt="false">
-            </div>
-            <div class="g_id_signin" data-type="standard" data-shape="pill"></div>
+        <h2 style="color: var(--orkut-blue);">Entrar no orkut</h2>
+        <p>Use sua conta do Google para continuar</p><br>
+        <div id="g_id_onload"
+             data-client_id="8393724573-kdnas52bjnhjvtkhahtqchm1p000b0i4.apps.googleusercontent.com"
+             data-callback="handleLogin">
         </div>
+        <div class="g_id_signin" data-type="standard" data-shape="pill"></div>
     </div>
 
     <div id="app-content" class="hidden">
         <div class="post-box">
-            <textarea id="post-input" placeholder="No que você está pensando?" rows="3"></textarea>
-            <button class="btn-post" id="btn-publish">Publicar</button>
-            <div style="clear: both;"></div>
+            <textarea id="post-input" placeholder="O que você quer contar?" rows="3"></textarea>
+            <button class="btn-post" onclick="enviarPost()">Publicar</button>
+            <div style="clear:both"></div>
         </div>
-
-        <div id="feed">
-            </div>
+        <div id="feed"></div>
     </div>
 </main>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
+<script>
+    // CONFIGURAÇÃO FIREBASE
     const firebaseConfig = {
         apiKey: "AIzaSyDwtEYsXqq5Ed131USZ9tZhFqaJvD0480M",
         authDomain: "fir-75fa8.firebaseapp.com",
@@ -186,62 +67,55 @@
         appId: "1:390149251555:web:6471327ebf6c42cced00d6"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    let currentUser = null;
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    let userAtual = null;
 
-    // TORNAR A FUNÇÃO GLOBAL PARA O GOOGLE ENXERGAR
-    window.handleLogin = (response) => {
+    // FUNÇÃO DE LOGIN (CHAMADA PELO GOOGLE)
+    function handleLogin(response) {
+        console.log("Resposta recebida do Google");
         const payload = JSON.parse(atob(response.credential.split('.')[1]));
-        currentUser = {
-            name: payload.name,
-            photo: payload.picture
-        };
+        
+        userAtual = { name: payload.name, photo: payload.picture };
 
-        // Troca de telas
+        // Troca visual de telas
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('app-content').classList.remove('hidden');
         document.getElementById('user-nav').classList.remove('hidden');
         document.getElementById('nav-avatar').src = payload.picture;
 
-        console.log("Logado como:", currentUser.name);
-        startListening();
-    };
+        carregarPosts();
+    }
 
-    // Função para publicar
-    document.getElementById('btn-publish').onclick = async () => {
-        const text = document.getElementById('post-input').value;
-        if (!text.trim() || !currentUser) return;
+    // ENVIAR POST PARA O BANCO
+    function enviarPost() {
+        const txt = document.getElementById('post-input').value;
+        if (!txt.trim()) return;
 
-        try {
-            await addDoc(collection(db, "posts"), {
-                name: currentUser.name,
-                photo: currentUser.photo,
-                text: text,
-                createdAt: serverTimestamp()
-            });
+        db.collection("posts").add({
+            nome: userAtual.name,
+            foto: userAtual.photo,
+            texto: txt,
+            data: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
             document.getElementById('post-input').value = "";
-        } catch (e) {
-            console.error("Erro ao salvar:", e);
-            alert("Erro ao postar! Verifique as regras do Firebase.");
-        }
-    };
+        }).catch(err => alert("Erro ao postar: Verifique as regras do seu Firebase!"));
+    }
 
-    // Carregar feed em tempo real
-    function startListening() {
-        const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-        onSnapshot(q, (snapshot) => {
+    // CARREGAR POSTS EM TEMPO REAL
+    function carregarPosts() {
+        db.collection("posts").orderBy("data", "desc").onSnapshot(snapshot => {
             const feed = document.getElementById('feed');
             feed.innerHTML = "";
-            snapshot.forEach((doc) => {
-                const post = doc.data();
+            snapshot.forEach(doc => {
+                const p = doc.data();
                 feed.innerHTML += `
                     <div class="post-card">
                         <div class="post-header">
-                            <img src="${post.photo}" class="user-pic">
-                            <span class="user-name">${post.name}</span>
+                            <img src="${p.foto}" class="user-pic">
+                            <span>${p.nome}</span>
                         </div>
-                        <div class="post-content">${post.text}</div>
+                        <div>${p.texto}</div>
                     </div>
                 `;
             });
