@@ -14,81 +14,57 @@
             --orkut-bg: #D4DDED; 
             --orkut-blue-header: #BFD0EA;
             --orkut-pink: #ED2590; 
-            --orkut-card-bg: #E7EDF6;
             --border: #A7BBDD;
             --dark-blue: #5d7eb9;
         }
         
         body { font-family: "Lucida Grande", Tahoma, Verdana, Arial, sans-serif; background: var(--orkut-bg); margin: 0; color: #333; }
         
-        /* Navbar */
         nav { background: var(--dark-blue); width: 100%; height: 50px; display: flex; justify-content: center; position: fixed; top: 0; z-index: 100; border-bottom: 2px solid #3b5998; }
         .nav-content { width: 100%; max-width: 900px; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; }
         .logo { color: white; font-size: 28px; font-weight: bold; text-decoration: none; font-style: italic; }
         
         main { width: 100%; max-width: 600px; margin-top: 70px; padding: 10px; box-sizing: border-box; }
         
-        /* Post Box */
-        .post-box { background: #fff; border: 1px solid var(--border); padding: 15px; border-radius: 4px; margin-bottom: 20px; }
-        textarea { width: 100%; border: 1px solid #999; padding: 8px; box-sizing: border-box; font-size: 13px; outline: none; resize: none; margin-bottom: 10px; }
+        /* Post Box Profissional */
+        .post-box { background: #fff; border: 1px solid var(--border); padding: 15px; border-radius: 4px; margin-bottom: 20px; box-shadow: 2px 2px 0px rgba(0,0,0,0.05); }
+        .caption-input { width: 100%; border: 1px solid #999; padding: 10px; box-sizing: border-box; font-size: 13px; outline: none; resize: none; margin-bottom: 10px; border-radius: 2px; }
         
-        .btn-post { background: var(--orkut-pink); color: #fff; border: 1px solid #b01c6a; padding: 5px 15px; cursor: pointer; font-weight: bold; font-size: 11px; text-transform: uppercase; }
+        .preview-container { position: relative; width: 100%; margin-bottom: 10px; display: none; border: 1px solid #ddd; padding: 5px; background: #f9f9f9; }
+        .preview-container img { width: 100%; max-height: 350px; object-fit: contain; display: block; }
+        .remove-preview { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-weight: bold; }
 
-        /* Card */
-        .post-card { background: #fff; border: 1px solid var(--border); margin-bottom: 25px; border-radius: 4px; overflow: hidden; }
+        .btn-post { background: var(--orkut-pink); color: #fff; border: 1px solid #b01c6a; padding: 6px 20px; cursor: pointer; font-weight: bold; font-size: 11px; text-transform: uppercase; }
+        .btn-post:disabled { background: #ccc; border-color: #999; cursor: not-allowed; }
+
+        /* Card de Postagem */
+        .post-card { background: #fff; border: 1px solid var(--border); margin-bottom: 25px; border-radius: 4px; overflow: hidden; animation: fadeIn 0.4s; }
         .post-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: var(--orkut-blue-header); border-bottom: 1px solid var(--border); }
         .user-info { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #3b5998; font-size: 13px; }
-        .user-pic { width: 35px; height: 35px; border: 1px solid #fff; object-fit: cover; border-radius: 2px; }
-        .post-img { width: 100%; display: block; border-bottom: 1px solid #eee; }
-        .post-text { padding: 12px; font-size: 13px; }
+        .user-pic { width: 35px; height: 35px; border: 1px solid #fff; object-fit: cover; }
+        .post-img { width: 100%; display: block; max-height: 600px; object-fit: contain; background: #f0f4f8; }
+        .post-text { padding: 12px; font-size: 13px; line-height: 1.6; }
 
-        /* Ações */
-        .post-actions { padding: 10px 15px; display: flex; gap: 20px; background: #fff; border-top: 1px solid #f0f0f0; }
-        .action-item { display: flex; align-items: center; gap: 6px; cursor: pointer; color: #555; font-size: 12px; font-weight: bold; }
-        .icon-svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; overflow: visible; transition: 0.3s cubic-bezier(0.17, 0.89, 0.32, 1.28); }
-        
-        .is-liked { color: #e0245e; }
-        .is-liked .icon-svg { fill: #e0245e; stroke: #e0245e; transform: scale(1.1); }
-        .is-saved { color: #f5a623; }
-        .is-saved .icon-svg { fill: #f5a623; stroke: #f5a623; }
+        /* Modal Customizado */
+        #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .modal-box { background: #fff; border: 2px solid var(--dark-blue); width: 300px; border-radius: 4px; overflow: hidden; }
+        .modal-header { background: var(--dark-blue); color: white; padding: 8px; font-size: 12px; font-weight: bold; }
+        .modal-body { padding: 20px; font-size: 13px; text-align: center; }
+        .modal-footer { padding: 10px; display: flex; justify-content: center; gap: 10px; background: #f0f4f8; }
 
-        /* Diálogo Customizado (Modal) */
-        #modal-overlay { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.4); display: none; align-items: center; 
-            justify-content: center; z-index: 2000; animation: fadeIn 0.2s;
-        }
-        .modal-box { 
-            background: #fff; border: 2px solid var(--dark-blue); width: 90%; max-width: 320px; 
-            border-radius: 4px; box-shadow: 4px 4px 10px rgba(0,0,0,0.2); 
-        }
-        .modal-header { background: var(--dark-blue); color: white; padding: 8px 12px; font-weight: bold; font-size: 13px; }
-        .modal-body { padding: 20px 15px; font-size: 13px; color: #333; text-align: center; }
-        .modal-footer { padding: 10px; display: flex; justify-content: center; gap: 10px; border-top: 1px solid #eee; }
-        .btn-modal { padding: 5px 15px; border: 1px solid #999; cursor: pointer; font-size: 11px; font-weight: bold; border-radius: 2px; }
-        .btn-confirm { background: var(--orkut-pink); color: white; border-color: #b01c6a; }
-
-        /* Aba Comentários */
-        .comments-section { background: #f4f7fb; border-top: 1px solid #e0e0e0; display: none; padding: 12px; }
-        .comments-section.open { display: block; animation: slideDown 0.3s ease-out; }
-        .comment-item { font-size: 12px; padding: 6px 0; border-bottom: 1px dotted #ccc; display: flex; justify-content: space-between; }
-        .btn-del-comm { color: #999; cursor: pointer; font-size: 10px; margin-left: 5px; }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        
         .hidden { display: none !important; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
 
 <div id="modal-overlay">
     <div class="modal-box">
-        <div class="modal-header" id="modal-title">orkut diz:</div>
-        <div class="modal-body" id="modal-msg">Mensagem padrão.</div>
-        <div class="modal-footer" id="modal-actions">
-            <button class="btn-modal" onclick="closeModal(false)">cancelar</button>
-            <button class="btn-modal btn-confirm" onclick="closeModal(true)">confirmar</button>
+        <div class="modal-header">orkut diz:</div>
+        <div class="modal-body" id="modal-msg"></div>
+        <div class="modal-footer">
+            <button class="btn-post" id="btn-cancel" onclick="closeModal(false)" style="background:#999; border-color:#777">cancelar</button>
+            <button class="btn-post" onclick="closeModal(true)">ok</button>
         </div>
     </div>
 </div>
@@ -101,20 +77,27 @@
 </nav>
 
 <main>
-    <div id="login-screen">
-        <h2 style="color: var(--dark-blue);">bem-vindo ao orkut</h2>
+    <div id="login-screen" style="background:#fff; padding:40px; border:1px solid var(--border); text-align:center;">
+        <h2 style="color:var(--dark-blue)">entrar no orkut</h2>
         <div id="g_id_onload" data-client_id="8393724573-kdnas52bjnhjvtkhahtqchm1p000b0i4.apps.googleusercontent.com" data-callback="handleLogin"></div>
         <div class="g_id_signin" data-type="standard"></div>
     </div>
 
     <div id="app-content" class="hidden">
         <div class="post-box">
-            <textarea id="post-input" placeholder="No que você está pensando agora?" rows="2"></textarea>
-            <img id="preview-img" class="hidden" style="width:100%; max-height:200px; object-fit:cover; margin-bottom:10px;">
+            <div id="preview-container" class="preview-container">
+                <button class="remove-preview" onclick="limparSelecao()">×</button>
+                <img id="preview-img">
+            </div>
+
+            <textarea id="post-input" class="caption-input" placeholder="No que você está pensando agora?" rows="2"></textarea>
+            
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <label for="file-input" style="cursor: pointer; color: var(--dark-blue); font-size: 11px; font-weight:bold;">[+] foto</label>
-                <input type="file" id="file-input" accept="image/*" class="hidden" onchange="mostrarPreview(this)">
-                <button id="btn-publicar" class="btn-post" onclick="enviarPost()">enviar</button>
+                <label for="file-input" style="cursor: pointer; color: var(--dark-blue); font-size: 12px; font-weight:bold;">
+                    📷 [adicionar foto]
+                </label>
+                <input type="file" id="file-input" accept="image/*" class="hidden" onchange="gerarPreview(this)">
+                <button id="btn-publicar" class="btn-post" onclick="enviarPost()">postar</button>
             </div>
         </div>
         <div id="feed"></div>
@@ -122,7 +105,7 @@
 </main>
 
 <script>
-    // --- CONFIG E INICIALIZAÇÃO ---
+    // FIREBASE
     const firebaseConfig = {
         apiKey: "AIzaSyDwtEYsXqq5Ed131USZ9tZhFqaJvD0480M",
         authDomain: "fir-75fa8.firebaseapp.com",
@@ -136,20 +119,20 @@
     const storage = firebase.storage();
     let userAtual = null;
 
-    // --- LÓGICA DO MODAL CUSTOMIZADO ---
-    let modalResolver;
+    // MODAL
+    let modalResolve;
     function showModal(msg, isAlert = false) {
         document.getElementById('modal-msg').innerText = msg;
         document.getElementById('modal-overlay').style.display = 'flex';
-        document.querySelectorAll('.btn-modal')[0].style.display = isAlert ? 'none' : 'inline-block';
-        return new Promise(resolve => { modalResolver = resolve; });
+        document.getElementById('btn-cancel').style.display = isAlert ? 'none' : 'block';
+        return new Promise(res => modalResolve = res);
     }
-    function closeModal(value) {
+    function closeModal(val) {
         document.getElementById('modal-overlay').style.display = 'none';
-        if (modalResolver) modalResolver(value);
+        if(modalResolve) modalResolve(val);
     }
 
-    // --- LOGIN ---
+    // LOGIN
     function handleLogin(response) {
         const payload = JSON.parse(atob(response.credential.split('.')[1]));
         userAtual = { name: payload.name, photo: payload.picture, id: payload.sub };
@@ -160,133 +143,93 @@
         carregarPosts();
     }
 
-    // --- POSTS ---
-    function mostrarPreview(input) {
-        if (input.files[0]) {
+    // PREVIEW E LEGENDA
+    function gerarPreview(input) {
+        if (input.files && input.files[0]) {
             const reader = new FileReader();
-            reader.onload = e => { document.getElementById('preview-img').src = e.target.result; document.getElementById('preview-img').classList.remove('hidden'); }
+            reader.onload = e => {
+                document.getElementById('preview-img').src = e.target.result;
+                document.getElementById('preview-container').style.display = 'block';
+                document.getElementById('post-input').placeholder = "Adicione uma legenda para esta foto...";
+                document.getElementById('post-input').focus();
+            };
             reader.readAsDataURL(input.files[0]);
         }
     }
 
+    function limparSelecao() {
+        document.getElementById('file-input').value = "";
+        document.getElementById('preview-container').style.display = 'none';
+        document.getElementById('post-input').placeholder = "No que você está pensando agora?";
+    }
+
+    // PUBLICAR
     async function enviarPost() {
         const txt = document.getElementById('post-input').value;
         const file = document.getElementById('file-input').files[0];
+        const btn = document.getElementById('btn-publicar');
+
         if (!txt.trim() && !file) return;
-        
-        let url = "";
+
+        btn.disabled = true;
+        btn.innerText = "enviando...";
+
         try {
+            let url = "";
             if (file) {
-                const ref = storage.ref().child(`posts/${userAtual.id}/${Date.now()}`);
-                await ref.put(file);
-                url = await ref.getDownloadURL();
+                // Caminho organizado por pasta de usuário
+                const ref = storage.ref().child(`posts/${userAtual.id}/${Date.now()}_${file.name}`);
+                const uploadTask = await ref.put(file);
+                url = await uploadTask.ref.getDownloadURL();
             }
+
             await db.collection("posts").add({
-                uid: userAtual.id, nome: userAtual.name, foto: userAtual.photo,
-                texto: txt, imagemPost: url, data: firebase.firestore.FieldValue.serverTimestamp(),
-                likes: 0, saves: 0, commCount: 0
+                uid: userAtual.id,
+                nome: userAtual.name,
+                foto: userAtual.photo,
+                texto: txt,
+                imagemPost: url,
+                data: firebase.firestore.FieldValue.serverTimestamp(),
+                likes: 0,
+                commCount: 0
             });
+
             document.getElementById('post-input').value = "";
-            document.getElementById('preview-img').classList.add('hidden');
-        } catch (e) { showModal("Erro ao postar", true); }
-    }
-
-    // --- INTERAÇÕES ---
-    async function toggleInteracao(postId, colecao, campo, element) {
-        const ref = db.collection("posts").doc(postId).collection(colecao).doc(userAtual.id);
-        const doc = await ref.get();
-        const activeClass = colecao === 'likes' ? 'is-liked' : 'is-saved';
-
-        if (!doc.exists) {
-            await ref.set({ t: Date.now() });
-            await db.collection("posts").doc(postId).update({ [campo]: firebase.firestore.FieldValue.increment(1) });
-            element.classList.add(activeClass);
-        } else {
-            await ref.delete();
-            await db.collection("posts").doc(postId).update({ [campo]: firebase.firestore.FieldValue.increment(-1) });
-            element.classList.remove(activeClass);
+            limparSelecao();
+        } catch (e) {
+            console.error(e);
+            showModal("Erro ao publicar foto. Verifique se o Firebase Storage está ativado.", true);
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "postar";
         }
     }
 
-    async function deletarPost(id, uid) {
-        if (uid !== userAtual.id) { showModal("Somente o autor pode deletar.", true); return; }
-        const confirmou = await showModal("Deseja realmente excluir esta postagem?");
-        if (confirmou) await db.collection("posts").doc(id).delete();
-    }
-
-    async function deletarComentario(postId, commentId) {
-        const confirmou = await showModal("Excluir seu comentário?");
-        if (confirmou) {
-            await db.collection("posts").doc(postId).collection("comments").doc(commentId).delete();
-            await db.collection("posts").doc(postId).update({ commCount: firebase.firestore.FieldValue.increment(-1) });
-        }
-    }
-
-    // --- FEED E COMENTÁRIOS ---
+    // FEED
     function carregarPosts() {
         db.collection("posts").orderBy("data", "desc").onSnapshot(snap => {
             const feed = document.getElementById('feed');
             feed.innerHTML = "";
             snap.forEach(doc => {
-                const p = doc.data(); const id = doc.id;
+                const p = doc.data();
+                const id = doc.id;
                 feed.innerHTML += `
                     <div class="post-card">
                         <div class="post-header">
                             <div class="user-info"><img src="${p.foto}" class="user-pic"> <span>${p.nome}</span></div>
-                            <div style="cursor:pointer; color:#777;" onclick="deletarPost('${id}', '${p.uid}')">•••</div>
+                            ${p.uid === userAtual.id ? `<div style="cursor:pointer" onclick="deletarPost('${id}')">•••</div>` : ''}
                         </div>
                         ${p.imagemPost ? `<img src="${p.imagemPost}" class="post-img">` : ''}
                         <div class="post-text"><strong>${p.nome}:</strong> ${p.texto}</div>
-                        <div class="post-actions">
-                            <div class="action-item" onclick="toggleInteracao('${id}', 'likes', 'likes', this)">
-                                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                                <span>${p.likes || 0}</span>
-                            </div>
-                            <div class="action-item" onclick="document.getElementById('sec-${id}').classList.toggle('open')">
-                                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.9A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.5 8.5 0 0 1 21 11.5z"></path></svg>
-                                <span>${p.commCount || 0}</span>
-                            </div>
-                            <div class="action-item" onclick="toggleInteracao('${id}', 'saves', 'saves', this)">
-                                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
-                                <span>${p.saves || 0}</span>
-                            </div>
-                        </div>
-                        <div id="sec-${id}" class="comments-section">
-                            <div id="list-${id}"></div>
-                            <div class="comment-input-wrap">
-                                <input id="inp-${id}" placeholder="comentar...">
-                                <button onclick="addComment('${id}')" class="btn-post">ok</button>
-                            </div>
-                        </div>
                     </div>`;
-                escutarComentarios(id);
             });
         });
     }
 
-    async function addComment(id) {
-        const inp = document.getElementById(`inp-${id}`);
-        if (!inp.value.trim()) return;
-        await db.collection("posts").doc(id).collection("comments").add({
-            uid: userAtual.id, nome: userAtual.name, texto: inp.value, data: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        await db.collection("posts").doc(id).update({ commCount: firebase.firestore.FieldValue.increment(1) });
-        inp.value = "";
-    }
-
-    function escutarComentarios(id) {
-        db.collection("posts").doc(id).collection("comments").orderBy("data", "asc").onSnapshot(s => {
-            const list = document.getElementById(`list-${id}`);
-            if (!list) return; list.innerHTML = "";
-            s.forEach(cDoc => {
-                const c = cDoc.data();
-                list.innerHTML += `
-                    <div class="comment-item">
-                        <span><strong>${c.nome}:</strong> ${c.texto}</span>
-                        ${c.uid === userAtual.id ? `<span class="btn-del-comm" onclick="deletarComentario('${id}', '${cDoc.id}')">[x]</span>` : ''}
-                    </div>`;
-            });
-        });
+    async function deletarPost(id) {
+        if (await showModal("Deseja apagar esta postagem?")) {
+            await db.collection("posts").doc(id).delete();
+        }
     }
 </script>
 </body>
