@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>orkut / instagram clone</title>
+    <title>Social App Pro</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
 
     <style>
-        :root { --orkut-blue: #5d7eb9; --orkut-pink: #ED2590; --border: #dbdbdb; }
-        body { font-family: -apple-system, system-ui, sans-serif; background: #fafafa; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        :root { --primary: #5d7eb9; --accent: #ED2590; --border: #dbdbdb; --bg: #fafafa; --text: #262626; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); margin: 0; color: var(--text); }
         
         nav { background: #fff; width: 100%; height: 60px; display: flex; justify-content: center; border-bottom: 1px solid var(--border); position: fixed; top: 0; z-index: 100; }
         .nav-content { width: 100%; max-width: 935px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; }
@@ -23,25 +23,35 @@
         .post-box { background: #fff; border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin-bottom: 20px; }
         textarea { width: 100%; border: none; font-size: 16px; outline: none; margin-bottom: 10px; resize: none; font-family: inherit; }
         
-        .btn-post { background: var(--orkut-blue); color: #fff; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; float: right; font-weight: bold; }
-        .post-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 25px; overflow: hidden; position: relative; }
+        .btn-post { background: var(--primary); color: #fff; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; float: right; font-weight: bold; }
         
+        /* Card de Postagem */
+        .post-card { background: #fff; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 25px; overflow: hidden; position: relative; }
         .post-header { display: flex; align-items: center; justify-content: space-between; padding: 12px; }
-        .user-info { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--orkut-blue); }
+        .user-info { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--primary); }
         .user-pic { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
         
-        .post-img { width: 100%; display: block; background: #f0f0f0; }
+        .post-img { width: 100%; display: block; background: #f0f0f0; border-top: 1px solid #eee; border-bottom: 1px solid #eee;}
         
-        .post-actions { padding: 10px 15px; display: flex; gap: 15px; font-size: 20px; }
-        .action-btn { cursor: pointer; transition: transform 0.1s; }
-        .action-btn:hover { transform: scale(1.1); }
+        /* Ações e Ícones */
+        .post-actions { padding: 10px 15px; display: flex; gap: 15px; align-items: center; }
+        .action-group { display: flex; align-items: center; gap: 5px; cursor: pointer; font-size: 14px; font-weight: 500; }
+        .icon-svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; transition: all 0.2s; }
+        .liked { fill: #ed4956; stroke: #ed4956; }
+        .saved { fill: #262626; stroke: #262626; }
 
-        .post-content { padding: 0 15px 15px 15px; font-size: 14px; }
+        .post-content { padding: 0 15px 15px 15px; font-size: 14px; border-bottom: 1px solid #fafafa; }
         
-        /* Menu 3 pontinhos */
-        .options-menu { cursor: pointer; padding: 5px; font-weight: bold; }
+        /* Seção de Comentários */
+        .comments-section { background: #fdfdfd; border-top: 1px solid #efefef; padding: 15px; display: none; }
+        .comment-item { font-size: 13px; margin-bottom: 8px; display: flex; justify-content: space-between; }
+        .comment-input-area { display: flex; gap: 10px; margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; }
+        .comment-input-area input { flex: 1; border: none; outline: none; background: transparent; font-size: 13px; }
+
+        /* Dropdown 3 pontinhos */
+        .options-menu { cursor: pointer; padding: 5px; color: #8e8e8e; }
         .dropdown { position: absolute; right: 10px; top: 40px; background: white; border: 1px solid #ddd; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 10; display: none; }
-        .dropdown button { display: block; width: 100%; padding: 10px; border: none; background: none; cursor: pointer; text-align: left; font-size: 13px; }
+        .dropdown button { display: block; width: 100%; padding: 10px 20px; border: none; background: none; cursor: pointer; text-align: left; font-size: 13px; }
         .dropdown button:hover { background: #f5f5f5; }
 
         .hidden { display: none !important; }
@@ -52,17 +62,17 @@
 
 <nav>
     <div class="nav-content">
-        <span style="font-size: 24px; font-weight: bold; color: var(--orkut-pink);">orkut</span>
-        <div id="user-nav" class="hidden" style="display: flex; align-items: center; gap: 10px;">
-            <button onclick="location.reload()" style="background:none; border:none; cursor:pointer">🏠</button>
+        <span style="font-size: 24px; font-weight: bold; color: var(--accent);">socialapp</span>
+        <div id="user-nav" class="hidden" style="display: flex; align-items: center; gap: 15px;">
             <img id="nav-avatar" class="user-pic" src="">
+            <button onclick="location.reload()" style="background:none; border:none; cursor:pointer; font-size: 18px;">🏠</button>
         </div>
     </div>
 </nav>
 
 <main>
     <div id="login-screen">
-        <h2 style="color: var(--orkut-blue);">Entrar no orkut</h2>
+        <h2 style="color: var(--primary);">Bem-vindo</h2>
         <div id="g_id_onload" data-client_id="8393724573-kdnas52bjnhjvtkhahtqchm1p000b0i4.apps.googleusercontent.com" data-callback="handleLogin" data-auto_prompt="false"></div>
         <div class="g_id_signin" data-type="standard" data-shape="pill"></div>
     </div>
@@ -72,7 +82,7 @@
             <textarea id="post-input" placeholder="No que você está pensando?" rows="2"></textarea>
             <img id="preview-img" class="hidden">
             <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 10px;">
-                <label for="file-input" style="cursor: pointer; color: var(--orkut-blue);">📷 Foto</label>
+                <label for="file-input" style="cursor: pointer; color: var(--primary); font-weight: 500;">📁 Carregar Mídia</label>
                 <input type="file" id="file-input" accept="image/*" class="hidden" onchange="mostrarPreview(this)">
                 <button id="btn-publicar" class="btn-post" onclick="enviarPost()">Publicar</button>
             </div>
@@ -99,12 +109,10 @@
     function handleLogin(response) {
         const payload = JSON.parse(atob(response.credential.split('.')[1]));
         userAtual = { name: payload.name, photo: payload.picture, email: payload.email, id: payload.sub };
-
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('app-content').classList.remove('hidden');
         document.getElementById('user-nav').classList.remove('hidden');
         document.getElementById('nav-avatar').src = payload.picture;
-
         carregarPosts();
     }
 
@@ -120,7 +128,7 @@
     async function enviarPost() {
         const txt = document.getElementById('post-input').value;
         const file = document.getElementById('file-input').files[0];
-        if ((!txt.trim() && !file) || !userAtual) return;
+        if (!txt.trim() && !file) return;
 
         const btn = document.getElementById('btn-publicar');
         btn.disabled = true;
@@ -128,45 +136,53 @@
         let urlImagem = "";
         try {
             if (file) {
-                // ORGANIZAÇÃO EM PASTAS: posts/ID_USUARIO/timestamp_nome
-                const ref = storage.ref().child(`posts/${userAtual.id}/${Date.now()}_${file.name}`);
+                const ref = storage.ref().child(`posts/${userAtual.id}/${Date.now()}_post`);
                 await ref.put(file);
                 urlImagem = await ref.getDownloadURL();
             }
 
             await db.collection("posts").add({
                 uid: userAtual.id,
-                email: userAtual.email,
                 nome: userAtual.name,
                 foto: userAtual.photo,
                 texto: txt,
                 imagemPost: urlImagem,
                 data: firebase.firestore.FieldValue.serverTimestamp(),
-                likes: 0
+                countLikes: 0,
+                countComments: 0,
+                countSaves: 0
             });
 
             document.getElementById('post-input').value = "";
             document.getElementById('preview-img').classList.add('hidden');
             document.getElementById('file-input').value = "";
-        } catch (e) { alert("Erro ao postar"); }
+        } catch (e) { console.error(e); }
         btn.disabled = false;
     }
 
-    function toggleMenu(id) {
-        const menu = document.getElementById(`menu-${id}`);
-        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    // INTERAÇÕES (Like, Save, Comentar)
+    async function interagir(id, campo) {
+        const docRef = db.collection("posts").doc(id);
+        await docRef.update({ [campo]: firebase.firestore.FieldValue.increment(1) });
     }
 
-    async function deletarPost(id, imgUrl) {
-        if (!confirm("Excluir esta postagem?")) return;
-        try {
-            await db.collection("posts").doc(id).delete();
-            if (imgUrl) { await storage.refFromURL(imgUrl).delete(); }
-        } catch (e) { alert("Erro ao deletar"); }
+    function toggleComments(id) {
+        const el = document.getElementById(`comments-${id}`);
+        el.style.display = el.style.display === 'block' ? 'none' : 'block';
     }
 
-    function denunciarPost(id) {
-        alert("Postagem ID: " + id + " foi enviada para análise da moderação.");
+    async function addComment(id) {
+        const input = document.getElementById(`input-${id}`);
+        if (!input.value.trim()) return;
+
+        await db.collection("posts").doc(id).collection("comments").add({
+            nome: userAtual.name,
+            texto: input.value,
+            data: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        
+        await db.collection("posts").doc(id).update({ countComments: firebase.firestore.FieldValue.increment(1) });
+        input.value = "";
     }
 
     function carregarPosts() {
@@ -176,9 +192,9 @@
             snapshot.forEach(doc => {
                 const p = doc.data();
                 const id = doc.id;
-                const isOwner = userAtual && p.email === userAtual.email;
+                const isOwner = p.uid === userAtual.id;
 
-                feed.innerHTML += `
+                const card = `
                     <div class="post-card">
                         <div class="post-header">
                             <div class="user-info">
@@ -186,12 +202,9 @@
                                 <span>${p.nome}</span>
                             </div>
                             <div style="position:relative">
-                                <div class="options-menu" onclick="toggleMenu('${id}')">...</div>
-                                <div id="menu-${id}" class="dropdown">
-                                    ${isOwner ? 
-                                        `<button onclick="deletarPost('${id}', '${p.imagemPost}')" style="color:red">Deletar</button>` : 
-                                        `<button onclick="denunciarPost('${id}')">Denunciar</button>`
-                                    }
+                                <div class="options-menu" onclick="document.getElementById('drop-${id}').style.display='block'">•••</div>
+                                <div id="drop-${id}" class="dropdown" onmouseleave="this.style.display='none'">
+                                    ${isOwner ? `<button onclick="deletarPost('${id}')" style="color:red">Excluir</button>` : `<button onclick="alert('Denunciado')">Denunciar</button>`}
                                 </div>
                             </div>
                         </div>
@@ -199,18 +212,58 @@
                         ${p.imagemPost ? `<img src="${p.imagemPost}" class="post-img">` : ''}
 
                         <div class="post-actions">
-                            <span class="action-btn" onclick="alert('Curtiu!')">❤️</span>
-                            <span class="action-btn" onclick="alert('Abrir comentários...')">💬</span>
-                            <span class="action-btn" onclick="alert('Salvo!')">🔖</span>
+                            <div class="action-group" onclick="interagir('${id}', 'countLikes'); this.children[0].classList.toggle('liked')">
+                                <svg class="icon-svg"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                <span>${p.countLikes || 0}</span>
+                            </div>
+                            <div class="action-group" onclick="toggleComments('${id}')">
+                                <svg class="icon-svg"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.9A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.5 8.5 0 0 1 21 11.5z"></path></svg>
+                                <span>${p.countComments || 0}</span>
+                            </div>
+                            <div class="action-group" onclick="interagir('${id}', 'countSaves'); this.children[0].classList.toggle('saved')">
+                                <svg class="icon-svg"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                                <span>${p.countSaves || 0}</span>
+                            </div>
                         </div>
 
                         <div class="post-content">
                             <strong>${p.nome}</strong> ${p.texto}
                         </div>
+
+                        <div id="comments-${id}" class="comments-section">
+                            <div id="list-${id}"></div>
+                            <div class="comment-input-area">
+                                <input id="input-${id}" placeholder="Escreva um comentário...">
+                                <button onclick="addComment('${id}')" style="background:none; border:none; color:var(--primary); font-weight:bold; cursor:pointer">Publicar</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                feed.innerHTML += card;
+                carregarComentarios(id);
+            });
+        });
+    }
+
+    function carregarComentarios(postId) {
+        db.collection("posts").doc(postId).collection("comments").orderBy("data", "asc").onSnapshot(snap => {
+            const list = document.getElementById(`list-${postId}`);
+            if(!list) return;
+            list.innerHTML = "";
+            snap.forEach(doc => {
+                const c = doc.data();
+                list.innerHTML += `
+                    <div class="comment-item">
+                        <span><strong>${c.nome}</strong> ${c.texto}</span>
+                        <span style="color:#999; font-size:10px; cursor:pointer">curtir</span>
                     </div>
                 `;
             });
         });
+    }
+
+    async function deletarPost(id) {
+        if(confirm("Deseja apagar?")) await db.collection("posts").doc(id).delete();
     }
 </script>
 </body>
