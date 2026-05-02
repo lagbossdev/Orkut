@@ -9,6 +9,7 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
@@ -20,6 +21,10 @@
       min-height: 100vh;
       padding: 20px;
       color: #333;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
     }
 
     .orkut-container {
@@ -100,7 +105,6 @@
       white-space: nowrap;
     }
 
-    /* Botão customizado do Google */
     .g-signin-wrapper {
       display: flex;
       justify-content: center;
@@ -109,31 +113,50 @@
 
     .google-btn-custom {
       background: white;
-      border: 1px solid #dadce0;
-      border-radius: 6px;
+      border: 2px solid #dadce0;
+      border-radius: 8px;
       display: inline-flex;
       align-items: center;
       gap: 12px;
-      padding: 11px 20px 11px 14px;
+      padding: 14px 24px 14px 18px;
       cursor: pointer;
       font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-      font-size: 15px;
+      font-size: 16px;
       font-weight: 500;
       color: #3c4043;
-      transition: all 0.15s ease;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-      letter-spacing: 0.2px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      letter-spacing: 0.3px;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      -webkit-touch-callout: none;
     }
 
     .google-btn-custom:hover {
-      background: #f8f9ff;
-      border-color: #b8c0ce;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      background: #f1f5ff;
+      border-color: #ed2590;
+      box-shadow: 0 4px 12px rgba(237,37,144,0.15);
+      transform: translateY(-1px);
+    }
+
+    .google-btn-custom:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      background: #e8ecf4;
     }
 
     .google-btn-custom img {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
+      pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    .google-btn-custom span {
+      pointer-events: none;
     }
 
     .footer-links {
@@ -186,9 +209,14 @@
       color: #ed2590;
       cursor: pointer;
       font-weight: bold;
-      font-size: 13px;
+      font-size: 14px;
       margin-top: 18px;
       text-decoration: underline;
+      padding: 8px 16px;
+    }
+
+    .logout-link:hover {
+      color: #c01e75;
     }
 
     .hidden {
@@ -200,8 +228,30 @@
       font-size: 12px;
       margin-top: 10px;
       background: #ffeaea;
-      padding: 8px;
-      border-radius: 6px;
+      padding: 10px;
+      border-radius: 8px;
+      border-left: 3px solid #c62828;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(237,37,144,0.2);
+      border-top-color: #ed2590;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    #loadingIndicator {
+      margin-top: 12px;
+      color: #666;
+      font-size: 13px;
     }
   </style>
 </head>
@@ -222,24 +272,28 @@
 
       <div class="divider-text"><span>Entrar com</span></div>
 
-      <!-- Botão estilizado Google -->
+      <!-- Botão customizado Google -->
       <div class="g-signin-wrapper">
-        <div class="google-btn-custom" id="customGoogleBtn">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
-          Fazer login com Google
-        </div>
+        <button class="google-btn-custom" id="customGoogleBtn" type="button">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" draggable="false">
+          <span>Fazer login com Google</span>
+        </button>
+      </div>
+
+      <div id="loadingIndicator" class="hidden">
+        <span class="loading-spinner"></span> Carregando...
       </div>
 
       <div id="errorMessage" class="error-msg hidden"></div>
       
       <div class="footer-links">
-        <a href="#">Sobre o Orkut</a>
-        <a href="#">Privacidade</a>
-        <a href="#">Ajuda</a>
+        <a href="#" onclick="return false;">Sobre o Orkut</a>
+        <a href="#" onclick="return false;">Privacidade</a>
+        <a href="#" onclick="return false;">Ajuda</a>
       </div>
     </div>
 
-    <!-- Tela de Boas-vindas (após login) -->
+    <!-- Tela de Boas-vindas -->
     <div id="welcomeScreen">
       <div class="logo-area">
         <div class="orkut-logo">orkut<span>.com</span></div>
@@ -254,17 +308,18 @@
         Scraps, comunidades, depoimentos e muito mais. Você está autenticado!
       </div>
 
-      <button class="logout-link" id="logoutBtn">Sair da conta</button>
+      <button class="logout-link" id="logoutBtn" type="button">Sair da conta</button>
     </div>
   </div>
 
-  <!-- Google Identity Services (GIS) -->
+  <!-- Google Identity Services -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   
   <script>
     (function() {
       // ======== CONFIGURAÇÃO ========
       const GOOGLE_CLIENT_ID = '8393724573-kdnas52bjnhjvtkhahtqchm1p000b0i4.apps.googleusercontent.com';
+      const SITE_URL = 'https://lagbossdev.github.io/Orkut/';
       
       // Elementos do DOM
       const loginScreen = document.getElementById('loginScreen');
@@ -274,42 +329,94 @@
       const userNameDisplay = document.getElementById('userName');
       const userAvatar = document.getElementById('userAvatar');
       const errorDiv = document.getElementById('errorMessage');
+      const loadingIndicator = document.getElementById('loadingIndicator');
 
       // ======== INICIALIZAÇÃO GOOGLE IDENTITY ========
       function initGoogleAuth() {
         if (typeof google === 'undefined' || !google.accounts) {
-          console.warn('Google Identity Services ainda não carregado. Tentando novamente...');
-          setTimeout(initGoogleAuth, 300);
+          console.warn('⏳ Google Identity Services carregando...');
+          setTimeout(initGoogleAuth, 500);
           return;
         }
 
-        google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: handleCredentialResponse,
-          auto_select: false,
-          cancel_on_tap_outside: true,
-        });
-
-        // Associar o clique do botão customizado ao prompt do Google
-        customGoogleBtn.addEventListener('click', () => {
-          google.accounts.id.prompt((notification) => {
-            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-              // Se o One Tap não aparecer, força o popup tradicional
-              google.accounts.id.prompt();
-            }
+        try {
+          google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: handleCredentialResponse,
+            auto_select: false,
+            cancel_on_tap_outside: true,
+            context: 'signin',
+            ux_mode: 'popup',
+            login_uri: SITE_URL
           });
-        });
 
-        // Também podemos tentar exibir o One Tap automaticamente (discreto)
-        google.accounts.id.prompt();
-        
-        console.log('✅ Google Identity inicializado com sucesso.');
+          console.log('✅ Google Identity inicializado');
+          
+          // Esconder loading
+          loadingIndicator.classList.add('hidden');
+          errorDiv.classList.add('hidden');
+          
+        } catch (error) {
+          console.error('❌ Erro ao inicializar Google Identity:', error);
+          showError('Erro ao carregar autenticação. Recarregue a página.');
+          loadingIndicator.classList.add('hidden');
+        }
       }
+
+      // ======== CLIQUE NO BOTÃO ========
+      customGoogleBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Evitar seleção de texto
+        if (window.getSelection) {
+          window.getSelection().removeAllRanges();
+        }
+        
+        // Mostrar loading
+        loadingIndicator.classList.remove('hidden');
+        errorDiv.classList.add('hidden');
+        
+        // Verificar se Google Identity está pronto
+        if (typeof google === 'undefined' || !google.accounts) {
+          showError('Serviço de autenticação ainda carregando. Aguarde um momento...');
+          loadingIndicator.classList.add('hidden');
+          initGoogleAuth();
+          return;
+        }
+
+        console.log('🔘 Botão clicado - iniciando autenticação...');
+        
+        // Forçar o popup de login
+        google.accounts.id.prompt((notification) => {
+          console.log('📢 Notification:', notification);
+          
+          if (notification.isNotDisplayed()) {
+            console.warn('⚠️ Prompt não exibido:', notification.getNotDisplayedReason());
+            // Tentar método alternativo
+            google.accounts.id.prompt();
+          } else if (notification.isSkippedMoment()) {
+            console.warn('⏭️ Prompt pulado:', notification.getSkippedReason());
+            // Tentar novamente
+            setTimeout(() => {
+              google.accounts.id.prompt();
+            }, 1000);
+          }
+        });
+        
+        // Timeout para esconder loading se demorar muito
+        setTimeout(() => {
+          if (!welcomeScreen.style.display || welcomeScreen.style.display === 'none') {
+            loadingIndicator.classList.add('hidden');
+          }
+        }, 10000);
+      });
 
       // ======== CALLBACK APÓS LOGIN ========
       function handleCredentialResponse(response) {
+        loadingIndicator.classList.add('hidden');
+        
         try {
-          // Decodificar o token JWT retornado pelo Google
           const credential = response.credential;
           const payload = parseJwt(credential);
           
@@ -317,24 +424,23 @@
             throw new Error('Não foi possível decodificar as credenciais.');
           }
 
-          console.log('🔓 Usuário autenticado:', payload);
+          console.log('🔓 Usuário autenticado:', payload.email);
 
-          // Exibir informações do usuário
           const userName = payload.name || 'Usuário';
           const userEmail = payload.email;
           const userPicture = payload.picture;
           const firstName = payload.given_name || userName.split(' ')[0];
 
           // Atualizar interface
-          userNameDisplay.textContent = `${userName} (${userEmail})`;
+          userNameDisplay.textContent = `${userName}`;
           
           if (userPicture) {
-            userAvatar.innerHTML = `<img src="${userPicture}" alt="Avatar" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">`;
+            userAvatar.innerHTML = `<img src="${userPicture}" alt="${firstName}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;" draggable="false">`;
           } else {
             userAvatar.textContent = firstName.charAt(0).toUpperCase();
           }
 
-          // Salvar sessão local (opcional)
+          // Salvar sessão
           localStorage.setItem('orkut_user', JSON.stringify({
             name: userName,
             email: userEmail,
@@ -348,7 +454,7 @@
           errorDiv.classList.add('hidden');
 
         } catch (error) {
-          console.error('❌ Erro no processamento do login:', error);
+          console.error('❌ Erro no processamento:', error);
           showError('Falha ao processar o login. Tente novamente.');
         }
       }
@@ -373,40 +479,38 @@
 
       // ======== LOGOUT ========
       function logout() {
-        // Limpar armazenamento local
         localStorage.removeItem('orkut_user');
         
-        // Desabilitar login automático futuro (revogar)
         if (window.google && google.accounts) {
           google.accounts.id.disableAutoSelect();
         }
         
-        // Voltar para tela de login
         welcomeScreen.style.display = 'none';
         loginScreen.classList.remove('hidden');
         
-        // Resetar elementos
         userAvatar.innerHTML = '';
         userNameDisplay.textContent = '';
         
-        console.log('👋 Logout realizado.');
+        console.log('👋 Logout realizado');
         
-        // Pequeno truque para reiniciar o estado Google Identity
+        // Reinicializar
         setTimeout(() => {
           if (window.google && google.accounts) {
             google.accounts.id.initialize({
               client_id: GOOGLE_CLIENT_ID,
               callback: handleCredentialResponse,
               auto_select: false,
+              login_uri: SITE_URL
             });
           }
-        }, 300);
+        }, 500);
       }
 
       // ======== EXIBIR ERRO ========
       function showError(message) {
         errorDiv.textContent = message;
         errorDiv.classList.remove('hidden');
+        loadingIndicator.classList.add('hidden');
       }
 
       // ======== VERIFICAR SESSÃO EXISTENTE ========
@@ -415,11 +519,10 @@
         if (savedUser) {
           try {
             const user = JSON.parse(savedUser);
-            // Verificar se login é recente (menos de 1 hora)
             if (Date.now() - user.loginTime < 3600000) {
-              userNameDisplay.textContent = `${user.name} (${user.email})`;
+              userNameDisplay.textContent = user.name;
               if (user.picture) {
-                userAvatar.innerHTML = `<img src="${user.picture}" alt="Avatar" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">`;
+                userAvatar.innerHTML = `<img src="${user.picture}" alt="Avatar" style="width:36px;height:36px;border-radius:50%;object-fit:cover;" draggable="false">`;
               } else {
                 userAvatar.textContent = user.name.charAt(0).toUpperCase();
               }
@@ -437,21 +540,16 @@
       // ======== EVENT LISTENERS ========
       logoutBtn.addEventListener('click', logout);
 
-      // ======== INICIAR TUDO ========
+      // Prevenir seleção de texto em todo o container
+      document.querySelector('.orkut-container').addEventListener('selectstart', function(e) {
+        e.preventDefault();
+      });
+
+      // ======== INICIAR ========
       window.addEventListener('load', () => {
-        // Verificar se já existe sessão ativa
         if (!checkExistingSession()) {
-          // Inicializar autenticação Google
           initGoogleAuth();
         }
-
-        // Fallback: se o Google Identity demorar, tentar novamente
-        setTimeout(() => {
-          if (!window.google || !google.accounts) {
-            console.warn('Google Identity Services não carregou. Verifique a conexão.');
-            showError('Serviço de autenticação indisponível. Recarregue a página.');
-          }
-        }, 5000);
       });
 
     })();
