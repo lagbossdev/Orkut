@@ -11,65 +11,67 @@
 
     <style>
         :root { 
-            --orkut-blue: #5d7eb9; 
+            --orkut-bg: #D4DDED; 
+            --orkut-blue-header: #BFD0EA;
             --orkut-pink: #ED2590; 
-            --bg: #EDF3F9; 
-            --border: #C5D3E9;
-            --text: #333;
+            --orkut-card-bg: #E7EDF6;
+            --border: #A7BBDD;
         }
         
-        body { font-family: Tahoma, Arial, sans-serif; background: var(--bg); margin: 0; color: var(--text); }
+        body { font-family: "Lucida Grande", Tahoma, Verdana, Arial, sans-serif; background: var(--orkut-bg); margin: 0; color: #333; }
         
-        nav { background: var(--orkut-blue); width: 100%; height: 45px; display: flex; justify-content: center; position: fixed; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .nav-content { width: 100%; max-width: 935px; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; }
-        .logo { color: white; font-size: 24px; font-weight: bold; text-decoration: none; }
+        /* Navbar */
+        nav { background: #5d7eb9; width: 100%; height: 50px; display: flex; justify-content: center; position: fixed; top: 0; z-index: 100; border-bottom: 2px solid #3b5998; }
+        .nav-content { width: 100%; max-width: 900px; display: flex; justify-content: space-between; align-items: center; padding: 0 15px; }
+        .logo { color: white; font-size: 28px; font-weight: bold; text-decoration: none; font-style: italic; }
         
-        main { width: 100%; max-width: 600px; margin-top: 60px; padding: 10px; box-sizing: border-box; }
+        main { width: 100%; max-width: 600px; margin-top: 70px; padding: 10px; box-sizing: border-box; }
         
-        #login-screen { background: #fff; border: 1px solid var(--border); padding: 40px; text-align: center; border-radius: 4px; margin-top: 50px; }
+        /* Post Box */
+        .post-box { background: #fff; border: 1px solid var(--border); padding: 15px; border-radius: 4px; margin-bottom: 20px; box-shadow: 2px 2px 0px rgba(0,0,0,0.05); }
+        textarea { width: 100%; border: 1px solid #999; padding: 8px; box-sizing: border-box; font-size: 13px; outline: none; resize: none; margin-bottom: 10px; border-radius: 2px; }
         
-        /* Box de Postagem */
-        .post-box { background: #fff; border: 1px solid var(--border); padding: 15px; border-radius: 4px; margin-bottom: 20px; }
-        textarea { width: 100%; border: 1px solid #ddd; padding: 8px; box-sizing: border-box; font-size: 14px; outline: none; resize: none; margin-bottom: 10px; }
-        
-        .btn-post { background: var(--orkut-pink); color: #fff; border: none; padding: 6px 15px; border-radius: 2px; cursor: pointer; float: right; font-weight: bold; font-size: 12px; }
+        .btn-post { background: var(--orkut-pink); color: #fff; border: 1px solid #b01c6a; padding: 5px 15px; cursor: pointer; font-weight: bold; font-size: 11px; text-transform: uppercase; transition: transform 0.1s; }
+        .btn-post:active { transform: scale(0.95); }
 
-        /* Card de Postagem */
-        .post-card { background: #fff; border: 1px solid var(--border); margin-bottom: 20px; position: relative; }
-        .post-header { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: #E7EDF6; border-bottom: 1px solid var(--border); }
-        .user-info { display: flex; align-items: center; gap: 8px; font-weight: bold; color: var(--orkut-blue); font-size: 13px; }
-        .user-pic { width: 30px; height: 30px; border-radius: 3px; object-fit: cover; }
+        /* Card */
+        .post-card { background: #fff; border: 1px solid var(--border); margin-bottom: 25px; border-radius: 4px; overflow: hidden; animation: fadeIn 0.5s ease; }
+        .post-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: var(--orkut-blue-header); border-bottom: 1px solid var(--border); }
+        .user-info { display: flex; align-items: center; gap: 8px; font-weight: bold; color: #3b5998; font-size: 13px; }
+        .user-pic { width: 35px; height: 35px; border: 1px solid #fff; object-fit: cover; border-radius: 2px; }
         
-        .post-img { width: 100%; display: block; max-height: 500px; object-fit: contain; background: #000; }
-        .post-text { padding: 12px; font-size: 13px; line-height: 1.5; }
+        .post-img { width: 100%; display: block; border-bottom: 1px solid #eee; background: #fff; }
+        .post-text { padding: 12px; font-size: 13px; border-bottom: 1px solid #f0f0f0; }
 
-        /* Ações Estilizadas */
-        .post-actions { padding: 8px 12px; display: flex; gap: 20px; border-top: 1px solid #f0f0f0; }
-        .action-item { display: flex; align-items: center; gap: 5px; cursor: pointer; color: #666; font-size: 12px; font-weight: bold; }
+        /* Interações Profissionais */
+        .post-actions { padding: 10px 15px; display: flex; gap: 20px; background: #fff; }
+        .action-item { display: flex; align-items: center; gap: 6px; cursor: pointer; color: #555; font-size: 12px; font-weight: bold; transition: color 0.3s; }
         
-        .icon-svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.5; transition: 0.2s; }
+        .icon-svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; overflow: visible; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         
-        /* Estados Ativos */
+        /* Cores de Ativo com Animação */
         .is-liked { color: #e0245e; }
-        .is-liked .icon-svg { fill: #e0245e; stroke: #e0245e; }
+        .is-liked .icon-svg { fill: #e0245e; stroke: #e0245e; transform: scale(1.2); }
         .is-saved { color: #f5a623; }
         .is-saved .icon-svg { fill: #f5a623; stroke: #f5a623; }
 
-        /* Comentários com FADE */
+        /* Aba de Comentários */
         .comments-section { 
-            background: #F7F9FB; border-top: 1px solid var(--border); 
-            max-height: 0; overflow: hidden; opacity: 0;
-            transition: max-height 0.4s ease, opacity 0.3s ease;
+            background: #f4f7fb; border-top: 1px solid #e0e0e0; 
+            display: none; opacity: 0; transform: translateY(-10px); transition: all 0.3s ease;
         }
-        .comments-section.open { max-height: 1000px; opacity: 1; padding: 10px; }
+        .comments-section.open { display: block; opacity: 1; transform: translateY(0); padding: 12px; }
 
-        .comment-item { font-size: 12px; padding: 5px 0; border-bottom: 1px dashed #ccc; }
-        .comment-input-wrap { display: flex; gap: 5px; margin-top: 10px; }
-        .comment-input-wrap input { flex: 1; border: 1px solid var(--border); padding: 5px; font-size: 12px; }
+        .comment-item { font-size: 12px; padding: 8px 0; border-bottom: 1px dotted #ccc; display: flex; justify-content: space-between; align-items: flex-start; }
+        .comment-content { flex: 1; }
+        .btn-del-comm { color: #999; cursor: pointer; font-size: 10px; margin-left: 10px; font-weight: normal; }
+        .btn-del-comm:hover { color: red; }
 
-        .options-dots { cursor: pointer; color: var(--orkut-blue); letter-spacing: 2px; font-weight: bold; }
+        .comment-input-wrap { display: flex; gap: 8px; margin-top: 12px; }
+        .comment-input-wrap input { flex: 1; border: 1px solid #ccc; padding: 6px; font-size: 12px; border-radius: 2px; outline: none; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .hidden { display: none !important; }
-        #preview-img { width: 100%; max-height: 200px; object-fit: cover; margin-bottom: 10px; border: 1px solid var(--border); }
     </style>
 </head>
 <body>
@@ -85,19 +87,19 @@
 
 <main>
     <div id="login-screen">
-        <h2 style="color: var(--orkut-blue);">entrar no orkut</h2>
+        <h2 style="color: #3b5998;">bem-vindo ao orkut</h2>
         <div id="g_id_onload" data-client_id="8393724573-kdnas52bjnhjvtkhahtqchm1p000b0i4.apps.googleusercontent.com" data-callback="handleLogin"></div>
         <div class="g_id_signin" data-type="standard"></div>
     </div>
 
     <div id="app-content" class="hidden">
         <div class="post-box">
-            <textarea id="post-input" placeholder="No que você está pensando?" rows="2"></textarea>
-            <img id="preview-img" class="hidden">
+            <textarea id="post-input" placeholder="No que você está pensando agora?" rows="2"></textarea>
+            <img id="preview-img" class="hidden" style="width:100%; max-height:250px; object-fit:cover; margin-bottom:10px; border:1px solid #ccc;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <label for="file-input" style="cursor: pointer; color: var(--orkut-blue); font-size: 12px;">[+] adicionar foto</label>
+                <label for="file-input" style="cursor: pointer; color: #3b5998; font-size: 11px; font-weight:bold;">[+] adicionar foto</label>
                 <input type="file" id="file-input" accept="image/*" class="hidden" onchange="mostrarPreview(this)">
-                <button id="btn-publicar" class="btn-post" onclick="enviarPost()">Publicar</button>
+                <button id="btn-publicar" class="btn-post" onclick="enviarPost()">enviar</button>
             </div>
         </div>
         <div id="feed"></div>
@@ -142,7 +144,6 @@
         const txt = document.getElementById('post-input').value;
         const file = document.getElementById('file-input').files[0];
         if (!txt.trim() && !file) return;
-
         const btn = document.getElementById('btn-publicar');
         btn.disabled = true;
 
@@ -156,41 +157,51 @@
             await db.collection("posts").add({
                 uid: userAtual.id, nome: userAtual.name, foto: userAtual.photo,
                 texto: txt, imagemPost: urlImg, data: firebase.firestore.FieldValue.serverTimestamp(),
-                likes: 0, saves: 0, commentsCount: 0
+                likes: 0, saves: 0, commCount: 0
             });
             document.getElementById('post-input').value = "";
             document.getElementById('preview-img').classList.add('hidden');
             document.getElementById('file-input').value = "";
-        } catch (e) { alert("Erro ao postar"); }
+        } catch (e) { alert(e); }
         btn.disabled = false;
     }
 
-    // LÓGICA DE 1 CLIQUE POR PESSOA
-    async function toggleInteracao(postId, colecao, campoContador) {
-        const refInteracao = db.collection("posts").doc(postId).collection(colecao).doc(userAtual.id);
-        const doc = await refInteracao.get();
+    async function toggleInteracao(postId, colecao, campoContador, element) {
+        const ref = db.collection("posts").doc(postId).collection(colecao).doc(userAtual.id);
+        const doc = await ref.get();
+        const activeClass = colecao === 'likes' ? 'is-liked' : 'is-saved';
 
         if (!doc.exists) {
-            await refInteracao.set({ timestamp: Date.now() });
+            await ref.set({ time: Date.now() });
             await db.collection("posts").doc(postId).update({ [campoContador]: firebase.firestore.FieldValue.increment(1) });
+            element.classList.add(activeClass);
         } else {
-            await refInteracao.delete();
+            await ref.delete();
             await db.collection("posts").doc(postId).update({ [campoContador]: firebase.firestore.FieldValue.increment(-1) });
+            element.classList.remove(activeClass);
         }
     }
 
     function toggleComments(id) {
-        document.getElementById(`sec-${id}`).classList.toggle('open');
+        const sec = document.getElementById(`sec-${id}`);
+        sec.classList.toggle('open');
     }
 
     async function addComment(id) {
         const inp = document.getElementById(`inp-${id}`);
         if (!inp.value.trim()) return;
         await db.collection("posts").doc(id).collection("comments").add({
-            nome: userAtual.name, texto: inp.value, data: firebase.firestore.FieldValue.serverTimestamp()
+            uid: userAtual.id, nome: userAtual.name, texto: inp.value, data: firebase.firestore.FieldValue.serverTimestamp()
         });
-        await db.collection("posts").doc(id).update({ commentsCount: firebase.firestore.FieldValue.increment(1) });
+        await db.collection("posts").doc(id).update({ commCount: firebase.firestore.FieldValue.increment(1) });
         inp.value = "";
+    }
+
+    async function deletarComentario(postId, commentId) {
+        if (confirm("excluir comentário?")) {
+            await db.collection("posts").doc(postId).collection("comments").doc(commentId).delete();
+            await db.collection("posts").doc(postId).update({ commCount: firebase.firestore.FieldValue.increment(-1) });
+        }
     }
 
     function carregarPosts() {
@@ -200,42 +211,36 @@
             snap.forEach(doc => {
                 const p = doc.data();
                 const id = doc.id;
-                const card = `
+                feed.innerHTML += `
                     <div class="post-card">
                         <div class="post-header">
-                            <div class="user-info">
-                                <img src="${p.foto}" class="user-pic">
-                                <span>${p.nome}</span>
-                            </div>
-                            <div class="options-dots" onclick="confirmDeletar('${id}', '${p.uid}')">•••</div>
+                            <div class="user-info"><img src="${p.foto}" class="user-pic"> <span>${p.nome}</span></div>
+                            <div style="cursor:pointer; color:#777;" onclick="if(confirm('deletar post?')) db.collection('posts').doc('${id}').delete()">•••</div>
                         </div>
                         ${p.imagemPost ? `<img src="${p.imagemPost}" class="post-img">` : ''}
                         <div class="post-text"><strong>${p.nome}:</strong> ${p.texto}</div>
-                        
                         <div class="post-actions">
-                            <div class="action-item" onclick="toggleInteracao('${id}', 'likes', 'likes')">
-                                <svg class="icon-svg"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                                <span>${p.likes || 0}</span>
+                            <div class="action-item" onclick="toggleInteracao('${id}', 'likes', 'likes', this)">
+                                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                <span class="count">${p.likes || 0}</span>
                             </div>
                             <div class="action-item" onclick="toggleComments('${id}')">
-                                <svg class="icon-svg"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.9A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.5 8.5 0 0 1 21 11.5z"></path></svg>
-                                <span>${p.commentsCount || 0}</span>
+                                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.9A8.38 8.38 0 0 1 4 11.5 8.5 8.5 0 0 1 12.5 3 8.5 8.5 0 0 1 21 11.5z"></path></svg>
+                                <span>${p.commCount || 0}</span>
                             </div>
-                            <div class="action-item" onclick="toggleInteracao('${id}', 'saves', 'saves')">
-                                <svg class="icon-svg"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                            <div class="action-item" onclick="toggleInteracao('${id}', 'saves', 'saves', this)">
+                                <svg class="icon-svg" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
                                 <span>${p.saves || 0}</span>
                             </div>
                         </div>
-
                         <div id="sec-${id}" class="comments-section">
                             <div id="list-${id}"></div>
                             <div class="comment-input-wrap">
-                                <input id="inp-${id}" placeholder="escrever comentário...">
-                                <button onclick="addComment('${id}')" class="btn-post" style="float:none">enviar</button>
+                                <input id="inp-${id}" placeholder="escreva um comentário...">
+                                <button onclick="addComment('${id}')" class="btn-post">ok</button>
                             </div>
                         </div>
                     </div>`;
-                feed.innerHTML += card;
                 escutarComentarios(id);
             });
         });
@@ -248,14 +253,14 @@
             list.innerHTML = "";
             s.forEach(cDoc => {
                 const c = cDoc.data();
-                list.innerHTML += `<div class="comment-item"><strong>${c.nome}:</strong> ${c.texto}</div>`;
+                const isMyComm = c.uid === userAtual.id;
+                list.innerHTML += `
+                    <div class="comment-item">
+                        <div class="comment-content"><strong>${c.nome}:</strong> ${c.texto}</div>
+                        ${isMyComm ? `<span class="btn-del-comm" onclick="deletarComentario('${id}', '${cDoc.id}')">[x]</span>` : ''}
+                    </div>`;
             });
         });
-    }
-
-    async function confirmDeletar(id, uid) {
-        if (uid !== userAtual.id) return alert("Somente o autor pode deletar ou você pode denunciar.");
-        if (confirm("Deletar post?")) await db.collection("posts").doc(id).delete();
     }
 </script>
 </body>
