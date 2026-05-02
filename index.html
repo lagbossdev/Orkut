@@ -3,208 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>orkut - Home</title>
+    <title>Social App</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         :root {
-            --orkut-blue-bg: #E5ECF9;
-            --orkut-blue-header: #BFD0EA;
-            --orkut-pink: #ED2590;
-            --orkut-blue-text: #5d7eb9;
-            --orkut-border: #C5D7EF;
+            --bg-color: #fafafa;
+            --border-color: #dbdbdb;
+            --text-color: #262626;
+            --blue: #0095f6;
         }
 
         body {
-            background-color: var(--orkut-blue-bg);
-            font-family: Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            font-size: 12px;
-        }
-
-        /* Topo */
-        header {
-            background-color: var(--orkut-blue-header);
-            padding: 5px 20px;
-            border-bottom: 1px solid #a5b5d1;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
         }
 
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--orkut-pink);
-            text-decoration: none;
+        /* Navbar */
+        nav {
+            background-color: #fff;
+            border-bottom: 1px solid var(--border-color);
+            width: 100%;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
         }
 
-        /* Container Principal */
-        .container {
-            width: 950px;
-            margin: 15px auto;
-            display: grid;
-            grid-template-columns: 180px 1fr 200px;
-            gap: 15px;
+        .nav-container {
+            width: 100%;
+            max-width: 935px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
         }
 
-        /* Blocos Genéricos */
-        .box {
+        .logo { font-weight: bold; font-size: 24px; text-decoration: none; color: inherit; }
+
+        /* Feed */
+        main {
+            margin-top: 90px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        /* Área de Postagem */
+        .post-creator {
             background: #fff;
-            border: 1px solid var(--orkut-border);
-            padding: 10px;
-            margin-bottom: 15px;
-        }
-
-        .box-title {
-            color: var(--orkut-blue-text);
-            font-weight: bold;
-            border-bottom: 1px solid var(--orkut-border);
-            margin-bottom: 8px;
-            padding-bottom: 3px;
-        }
-
-        /* Sidebar Perfil */
-        .profile-pic {
-            width: 150px;
-            height: 150px;
-            background: #eee;
-            border: 1px solid #ccc;
-            margin-bottom: 10px;
-        }
-
-        .menu-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .menu-list li {
-            padding: 3px 0;
-        }
-
-        .menu-list a {
-            color: var(--orkut-blue-text);
-            text-decoration: none;
-        }
-
-        /* Área Central */
-        .welcome-hero {
-            font-size: 18px;
-            margin-bottom: 10px;
-        }
-
-        .luck-box {
-            background: #FFF8E7;
-            border: 1px solid #FFE08C;
-            padding: 8px;
-            margin-bottom: 15px;
-        }
-
-        /* Comunidades em Grid */
-        .comm-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            text-align: center;
-        }
-
-        .comm-item img {
-            width: 50px;
-            height: 50px;
-            border: 1px solid #ccc;
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             padding: 20px;
-            color: #666;
+            margin-bottom: 24px;
         }
+
+        textarea {
+            width: 100%;
+            border: none;
+            resize: none;
+            outline: none;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .btn-post {
+            background-color: var(--blue);
+            color: white;
+            border: none;
+            padding: 7px 16px;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            float: right;
+        }
+
+        .btn-post:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Card de Post */
+        .post-card {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .post-header {
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #eee;
+        }
+
+        .user-name { font-weight: 600; font-size: 14px; }
+
+        .post-content {
+            padding: 14px;
+            font-size: 14px;
+            line-height: 1.5;
+            border-top: 1px solid #efefef;
+        }
+
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<header>
-    <a href="#" class="logo">orkut</a>
-    <div id="g_id_onload"
-         data-client_id="8393724573-kdnas52bjnhjvtkhahtqchm1p000b0i4.apps.googleusercontent.com"
-         data-callback="handleCredentialResponse">
+<nav>
+    <div class="nav-container">
+        <a href="#" class="logo">SocialGram</a>
+        <div id="g_id_onload"
+             data-client_id="8393724573-kdnas52bjnhjvtkhahtqchm1p000b0i4.apps.googleusercontent.com"
+             data-callback="handleLogin">
+        </div>
+        <div class="g_id_signin" data-type="standard"></div>
     </div>
-    <div class="g_id_signin" data-type="standard"></div>
-</header>
+</nav>
 
-<div class="container">
-    
-    <aside>
-        <div class="box">
-            <div id="user-name" class="box-title">Convidado</div>
-            <img src="https://via.placeholder.com/150" id="user-pic" class="profile-pic" alt="Foto">
-            <ul class="menu-list">
-                <li><a href="#">Perfil</a></li>
-                <li><a href="#">Recados (99+)</a></li>
-                <li><a href="#">Fotos</a></li>
-                <li><a href="#">Vídeos</a></li>
-                <li><a href="#">Depoimentos</a></li>
-            </ul>
-        </div>
-        
-        <div class="box">
-            <div class="box-title">Apps</div>
-            <a href="#">Adicionar apps</a>
-        </div>
-    </aside>
+<main>
+    <div id="post-area" class="post-creator hidden">
+        <textarea id="post-text" placeholder="No que você está pensando?" rows="3"></textarea>
+        <button class="btn-post" onclick="createPost()">Publicar</button>
+        <div style="clear: both;"></div>
+    </div>
 
-    <main>
-        <div class="welcome-hero">Início > <span id="display-name">Bem-vindo</span></div>
-        
-        <div class="luck-box">
-            <b>Sorte do dia:</b> O sucesso no GitHub começa com um belo index.html!
+    <div id="feed">
         </div>
-
-        <div class="box">
-            <div class="box-title">Minhas Comunidades</div>
-            <div class="comm-grid">
-                <div class="comm-item"><img src="https://via.placeholder.com/50"><br>Eu odeio acordar cedo</div>
-                <div class="comm-item"><img src="https://via.placeholder.com/50"><br>Tocava a campainha e corria</div>
-                <div class="comm-item"><img src="https://via.placeholder.com/50"><br>Sou legal, não estou te dando mole</div>
-                <div class="comm-item"><img src="https://via.placeholder.com/50"><br>Java Script Brasil</div>
-            </div>
-            <p style="text-align:right"><a href="#">ver todas</a></p>
-        </div>
-
-        <div class="box">
-            <div class="box-title">Atualizações dos seus amigos</div>
-            <p>Seus amigos ainda não postaram nada hoje.</p>
-        </div>
-    </main>
-
-    <aside>
-        <div class="box">
-            <div class="box-title">Meus Amigos (12)</div>
-            <div class="comm-grid" style="grid-template-columns: repeat(2, 1fr);">
-                <div class="comm-item"><img src="https://via.placeholder.com/50"><br>João</div>
-                <div class="comm-item"><img src="https://via.placeholder.com/50"><br>Maria</div>
-                <div class="comm-item"><img src="https://via.placeholder.com/50"><br>Pedro</div>
-                <div class="comm-item"><img src="https://via.placeholder.com/50"><br>Ana</div>
-            </div>
-            <p style="text-align:right"><a href="#">ver todos</a></p>
-        </div>
-    </aside>
-</div>
-
-<footer>
-    &copy; 2026 orkut.br - <a href="#">Sobre</a> - <a href="#">Centro de Segurança</a> - <a href="#">Privacidade</a>
-</footer>
+</main>
 
 <script>
-    function handleCredentialResponse(response) {
+    let currentUser = null;
+
+    // 1. Lidar com o Login do Google
+    function handleLogin(response) {
         const payload = JSON.parse(atob(response.credential.split('.')[1]));
+        currentUser = {
+            name: payload.name,
+            photo: payload.picture,
+            email: payload.email
+        };
         
-        // Atualiza a tela com os dados reais do Google
-        document.getElementById('user-name').innerText = payload.given_name;
-        document.getElementById('display-name').innerText = payload.name;
-        document.getElementById('user-pic').src = payload.picture;
+        document.getElementById('post-area').classList.remove('hidden');
+        document.querySelector('.g_id_signin').classList.add('hidden');
+    }
+
+    // 2. Sistema de Postagem Real (Simulação de Persistência Local para teste)
+    // DICA: Para ser real "para todos", conecte o Firebase aqui.
+    function createPost() {
+        const text = document.getElementById('post-text').value;
+        if (!text || !currentUser) return;
+
+        const newPost = {
+            userName: currentUser.name,
+            userPhoto: currentUser.photo,
+            content: text,
+            date: new Date().toLocaleString()
+        };
+
+        renderPost(newPost, true);
+        document.getElementById('post-text').value = '';
+    }
+
+    function renderPost(post, prepend = false) {
+        const feed = document.getElementById('feed');
+        const postHTML = `
+            <div class="post-card">
+                <div class="post-header">
+                    <img src="${post.userPhoto}" class="user-avatar">
+                    <span class="user-name">${post.userName}</span>
+                </div>
+                <div class="post-content">
+                    ${post.content}
+                </div>
+                <div style="padding: 0 14px 14px; font-size: 10px; color: #8e8e8e;">
+                    ${post.date}
+                </div>
+            </div>
+        `;
         
-        console.log("Usuário Logado:", payload);
+        if (prepend) {
+            feed.insertAdjacentHTML('afterbegin', postHTML);
+        } else {
+            feed.innerHTML += postHTML;
+        }
     }
 </script>
 
