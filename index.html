@@ -1,558 +1,212 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Orkut · Faça login</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>orkut - Home</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        :root {
+            --orkut-blue-bg: #E5ECF9;
+            --orkut-blue-header: #BFD0EA;
+            --orkut-pink: #ED2590;
+            --orkut-blue-text: #5d7eb9;
+            --orkut-border: #C5D7EF;
+        }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, 'Lucida Grande', Arial, sans-serif;
-      background: #d4e0f0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-      color: #333;
-      user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-    }
+        body {
+            background-color: var(--orkut-blue-bg);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            font-size: 12px;
+        }
 
-    .orkut-container {
-      background: white;
-      border: 1px solid #c0cde0;
-      border-radius: 3px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-      width: 100%;
-      max-width: 400px;
-      padding: 30px 25px 20px;
-      text-align: center;
-      position: relative;
-    }
+        /* Topo */
+        header {
+            background-color: var(--orkut-blue-header);
+            padding: 5px 20px;
+            border-bottom: 1px solid #a5b5d1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    .logo-area {
-      margin-bottom: 25px;
-    }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--orkut-pink);
+            text-decoration: none;
+        }
 
-    .orkut-logo {
-      font-size: 42px;
-      font-weight: 300;
-      letter-spacing: -2px;
-      color: #ed2590;
-      font-family: 'Trebuchet MS', 'Lucida Sans', Arial, sans-serif;
-      margin-bottom: 5px;
-    }
+        /* Container Principal */
+        .container {
+            width: 950px;
+            margin: 15px auto;
+            display: grid;
+            grid-template-columns: 180px 1fr 200px;
+            gap: 15px;
+        }
 
-    .orkut-logo span {
-      color: #515151;
-      font-weight: 500;
-    }
+        /* Blocos Genéricos */
+        .box {
+            background: #fff;
+            border: 1px solid var(--orkut-border);
+            padding: 10px;
+            margin-bottom: 15px;
+        }
 
-    .tagline {
-      color: #666;
-      font-size: 13px;
-      letter-spacing: 0.5px;
-      margin-top: -5px;
-    }
+        .box-title {
+            color: var(--orkut-blue-text);
+            font-weight: bold;
+            border-bottom: 1px solid var(--orkut-border);
+            margin-bottom: 8px;
+            padding-bottom: 3px;
+        }
 
-    .info-box {
-      background: #f5f8ff;
-      border: 1px solid #d9e2f0;
-      border-radius: 12px;
-      padding: 18px 15px;
-      margin-bottom: 25px;
-      font-size: 13px;
-      color: #4a5568;
-      text-align: left;
-      line-height: 1.5;
-    }
+        /* Sidebar Perfil */
+        .profile-pic {
+            width: 150px;
+            height: 150px;
+            background: #eee;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
 
-    .info-box strong {
-      color: #ed2590;
-      display: block;
-      margin-bottom: 5px;
-      font-size: 14px;
-    }
+        .menu-list {
+            list-style: none;
+            padding: 0;
+        }
 
-    .divider-text {
-      display: flex;
-      align-items: center;
-      color: #999;
-      font-size: 12px;
-      margin: 18px 0;
-      text-transform: uppercase;
-    }
+        .menu-list li {
+            padding: 3px 0;
+        }
 
-    .divider-text::before,
-    .divider-text::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: #ddd;
-    }
+        .menu-list a {
+            color: var(--orkut-blue-text);
+            text-decoration: none;
+        }
 
-    .divider-text span {
-      margin: 0 10px;
-      white-space: nowrap;
-    }
+        /* Área Central */
+        .welcome-hero {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
 
-    .g-signin-wrapper {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 10px;
-    }
+        .luck-box {
+            background: #FFF8E7;
+            border: 1px solid #FFE08C;
+            padding: 8px;
+            margin-bottom: 15px;
+        }
 
-    .google-btn-custom {
-      background: white;
-      border: 2px solid #dadce0;
-      border-radius: 8px;
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 24px 14px 18px;
-      cursor: pointer;
-      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
-      font-size: 16px;
-      font-weight: 500;
-      color: #3c4043;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      letter-spacing: 0.3px;
-      user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      -webkit-touch-callout: none;
-    }
+        /* Comunidades em Grid */
+        .comm-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            text-align: center;
+        }
 
-    .google-btn-custom:hover {
-      background: #f1f5ff;
-      border-color: #ed2590;
-      box-shadow: 0 4px 12px rgba(237,37,144,0.15);
-      transform: translateY(-1px);
-    }
+        .comm-item img {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #ccc;
+        }
 
-    .google-btn-custom:active {
-      transform: translateY(0);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      background: #e8ecf4;
-    }
-
-    .google-btn-custom img {
-      width: 22px;
-      height: 22px;
-      pointer-events: none;
-      user-select: none;
-      -webkit-user-drag: none;
-    }
-
-    .google-btn-custom span {
-      pointer-events: none;
-    }
-
-    .footer-links {
-      margin-top: 25px;
-      font-size: 11px;
-      color: #999;
-      display: flex;
-      justify-content: center;
-      gap: 15px;
-      flex-wrap: wrap;
-    }
-
-    .footer-links a {
-      color: #6b7f99;
-      text-decoration: none;
-    }
-
-    .footer-links a:hover {
-      text-decoration: underline;
-      color: #ed2590;
-    }
-
-    .user-avatar-mini {
-      background: #ed2590;
-      color: white;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      margin-right: 8px;
-      font-size: 16px;
-    }
-
-    #welcomeScreen {
-      display: none;
-    }
-
-    .welcome-header {
-      font-size: 20px;
-      color: #333;
-      margin: 10px 0;
-    }
-
-    .logout-link {
-      background: none;
-      border: none;
-      color: #ed2590;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 14px;
-      margin-top: 18px;
-      text-decoration: underline;
-      padding: 8px 16px;
-    }
-
-    .logout-link:hover {
-      color: #c01e75;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .error-msg {
-      color: #c62828;
-      font-size: 12px;
-      margin-top: 10px;
-      background: #ffeaea;
-      padding: 10px;
-      border-radius: 8px;
-      border-left: 3px solid #c62828;
-    }
-
-    .loading-spinner {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(237,37,144,0.2);
-      border-top-color: #ed2590;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin-right: 8px;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    #loadingIndicator {
-      margin-top: 12px;
-      color: #666;
-      font-size: 13px;
-    }
-  </style>
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
-  <div class="orkut-container" id="mainContainer">
+
+<header>
+    <a href="#" class="logo">orkut</a>
+    <div id="g_id_onload"
+         data-client_id="8393724573-kdnas52bjnhjvtkhahtqchm1p000b0i4.apps.googleusercontent.com"
+         data-callback="handleCredentialResponse">
+    </div>
+    <div class="g_id_signin" data-type="standard"></div>
+</header>
+
+<div class="container">
     
-    <!-- Tela de Login -->
-    <div id="loginScreen">
-      <div class="logo-area">
-        <div class="orkut-logo">orkut<span>.com</span></div>
-        <div class="tagline">Conecte-se aos seus amigos</div>
-      </div>
-
-      <div class="info-box">
-        <strong>🌟 Orkut está de volta!</strong>
-        Faça login com sua conta Google para reviver a nostalgia. Seus amigos, depoimentos e scraps esperam por você.
-      </div>
-
-      <div class="divider-text"><span>Entrar com</span></div>
-
-      <!-- Botão customizado Google -->
-      <div class="g-signin-wrapper">
-        <button class="google-btn-custom" id="customGoogleBtn" type="button">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" draggable="false">
-          <span>Fazer login com Google</span>
-        </button>
-      </div>
-
-      <div id="loadingIndicator" class="hidden">
-        <span class="loading-spinner"></span> Carregando...
-      </div>
-
-      <div id="errorMessage" class="error-msg hidden"></div>
-      
-      <div class="footer-links">
-        <a href="#" onclick="return false;">Sobre o Orkut</a>
-        <a href="#" onclick="return false;">Privacidade</a>
-        <a href="#" onclick="return false;">Ajuda</a>
-      </div>
-    </div>
-
-    <!-- Tela de Boas-vindas -->
-    <div id="welcomeScreen">
-      <div class="logo-area">
-        <div class="orkut-logo">orkut<span>.com</span></div>
-      </div>
-      <div id="userAvatar" class="user-avatar-mini"></div>
-      <div class="welcome-header">Bem-vindo de volta!</div>
-      <p id="userName" style="color:#555; margin:5px 0; font-size:15px;"></p>
-      <p style="font-size:13px; color:#777; margin-bottom:20px;">Seu perfil está pronto 🧡</p>
-      
-      <div class="info-box" style="text-align:center;">
-        <strong>✨ Em breve</strong>
-        Scraps, comunidades, depoimentos e muito mais. Você está autenticado!
-      </div>
-
-      <button class="logout-link" id="logoutBtn" type="button">Sair da conta</button>
-    </div>
-  </div>
-
-  <!-- Google Identity Services -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  
-  <script>
-    (function() {
-      // ======== CONFIGURAÇÃO ========
-      const GOOGLE_CLIENT_ID = '8393724573-kdnas52bjnhjvtkhahtqchm1p000b0i4.apps.googleusercontent.com';
-      const SITE_URL = 'https://lagbossdev.github.io/Orkut/';
-      
-      // Elementos do DOM
-      const loginScreen = document.getElementById('loginScreen');
-      const welcomeScreen = document.getElementById('welcomeScreen');
-      const customGoogleBtn = document.getElementById('customGoogleBtn');
-      const logoutBtn = document.getElementById('logoutBtn');
-      const userNameDisplay = document.getElementById('userName');
-      const userAvatar = document.getElementById('userAvatar');
-      const errorDiv = document.getElementById('errorMessage');
-      const loadingIndicator = document.getElementById('loadingIndicator');
-
-      // ======== INICIALIZAÇÃO GOOGLE IDENTITY ========
-      function initGoogleAuth() {
-        if (typeof google === 'undefined' || !google.accounts) {
-          console.warn('⏳ Google Identity Services carregando...');
-          setTimeout(initGoogleAuth, 500);
-          return;
-        }
-
-        try {
-          google.accounts.id.initialize({
-            client_id: GOOGLE_CLIENT_ID,
-            callback: handleCredentialResponse,
-            auto_select: false,
-            cancel_on_tap_outside: true,
-            context: 'signin',
-            ux_mode: 'popup',
-            login_uri: SITE_URL
-          });
-
-          console.log('✅ Google Identity inicializado');
-          
-          // Esconder loading
-          loadingIndicator.classList.add('hidden');
-          errorDiv.classList.add('hidden');
-          
-        } catch (error) {
-          console.error('❌ Erro ao inicializar Google Identity:', error);
-          showError('Erro ao carregar autenticação. Recarregue a página.');
-          loadingIndicator.classList.add('hidden');
-        }
-      }
-
-      // ======== CLIQUE NO BOTÃO ========
-      customGoogleBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
+    <aside>
+        <div class="box">
+            <div id="user-name" class="box-title">Convidado</div>
+            <img src="https://via.placeholder.com/150" id="user-pic" class="profile-pic" alt="Foto">
+            <ul class="menu-list">
+                <li><a href="#">Perfil</a></li>
+                <li><a href="#">Recados (99+)</a></li>
+                <li><a href="#">Fotos</a></li>
+                <li><a href="#">Vídeos</a></li>
+                <li><a href="#">Depoimentos</a></li>
+            </ul>
+        </div>
         
-        // Evitar seleção de texto
-        if (window.getSelection) {
-          window.getSelection().removeAllRanges();
-        }
+        <div class="box">
+            <div class="box-title">Apps</div>
+            <a href="#">Adicionar apps</a>
+        </div>
+    </aside>
+
+    <main>
+        <div class="welcome-hero">Início > <span id="display-name">Bem-vindo</span></div>
         
-        // Mostrar loading
-        loadingIndicator.classList.remove('hidden');
-        errorDiv.classList.add('hidden');
+        <div class="luck-box">
+            <b>Sorte do dia:</b> O sucesso no GitHub começa com um belo index.html!
+        </div>
+
+        <div class="box">
+            <div class="box-title">Minhas Comunidades</div>
+            <div class="comm-grid">
+                <div class="comm-item"><img src="https://via.placeholder.com/50"><br>Eu odeio acordar cedo</div>
+                <div class="comm-item"><img src="https://via.placeholder.com/50"><br>Tocava a campainha e corria</div>
+                <div class="comm-item"><img src="https://via.placeholder.com/50"><br>Sou legal, não estou te dando mole</div>
+                <div class="comm-item"><img src="https://via.placeholder.com/50"><br>Java Script Brasil</div>
+            </div>
+            <p style="text-align:right"><a href="#">ver todas</a></p>
+        </div>
+
+        <div class="box">
+            <div class="box-title">Atualizações dos seus amigos</div>
+            <p>Seus amigos ainda não postaram nada hoje.</p>
+        </div>
+    </main>
+
+    <aside>
+        <div class="box">
+            <div class="box-title">Meus Amigos (12)</div>
+            <div class="comm-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="comm-item"><img src="https://via.placeholder.com/50"><br>João</div>
+                <div class="comm-item"><img src="https://via.placeholder.com/50"><br>Maria</div>
+                <div class="comm-item"><img src="https://via.placeholder.com/50"><br>Pedro</div>
+                <div class="comm-item"><img src="https://via.placeholder.com/50"><br>Ana</div>
+            </div>
+            <p style="text-align:right"><a href="#">ver todos</a></p>
+        </div>
+    </aside>
+</div>
+
+<footer>
+    &copy; 2026 orkut.br - <a href="#">Sobre</a> - <a href="#">Centro de Segurança</a> - <a href="#">Privacidade</a>
+</footer>
+
+<script>
+    function handleCredentialResponse(response) {
+        const payload = JSON.parse(atob(response.credential.split('.')[1]));
         
-        // Verificar se Google Identity está pronto
-        if (typeof google === 'undefined' || !google.accounts) {
-          showError('Serviço de autenticação ainda carregando. Aguarde um momento...');
-          loadingIndicator.classList.add('hidden');
-          initGoogleAuth();
-          return;
-        }
-
-        console.log('🔘 Botão clicado - iniciando autenticação...');
+        // Atualiza a tela com os dados reais do Google
+        document.getElementById('user-name').innerText = payload.given_name;
+        document.getElementById('display-name').innerText = payload.name;
+        document.getElementById('user-pic').src = payload.picture;
         
-        // Forçar o popup de login
-        google.accounts.id.prompt((notification) => {
-          console.log('📢 Notification:', notification);
-          
-          if (notification.isNotDisplayed()) {
-            console.warn('⚠️ Prompt não exibido:', notification.getNotDisplayedReason());
-            // Tentar método alternativo
-            google.accounts.id.prompt();
-          } else if (notification.isSkippedMoment()) {
-            console.warn('⏭️ Prompt pulado:', notification.getSkippedReason());
-            // Tentar novamente
-            setTimeout(() => {
-              google.accounts.id.prompt();
-            }, 1000);
-          }
-        });
-        
-        // Timeout para esconder loading se demorar muito
-        setTimeout(() => {
-          if (!welcomeScreen.style.display || welcomeScreen.style.display === 'none') {
-            loadingIndicator.classList.add('hidden');
-          }
-        }, 10000);
-      });
+        console.log("Usuário Logado:", payload);
+    }
+</script>
 
-      // ======== CALLBACK APÓS LOGIN ========
-      function handleCredentialResponse(response) {
-        loadingIndicator.classList.add('hidden');
-        
-        try {
-          const credential = response.credential;
-          const payload = parseJwt(credential);
-          
-          if (!payload) {
-            throw new Error('Não foi possível decodificar as credenciais.');
-          }
-
-          console.log('🔓 Usuário autenticado:', payload.email);
-
-          const userName = payload.name || 'Usuário';
-          const userEmail = payload.email;
-          const userPicture = payload.picture;
-          const firstName = payload.given_name || userName.split(' ')[0];
-
-          // Atualizar interface
-          userNameDisplay.textContent = `${userName}`;
-          
-          if (userPicture) {
-            userAvatar.innerHTML = `<img src="${userPicture}" alt="${firstName}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;" draggable="false">`;
-          } else {
-            userAvatar.textContent = firstName.charAt(0).toUpperCase();
-          }
-
-          // Salvar sessão
-          localStorage.setItem('orkut_user', JSON.stringify({
-            name: userName,
-            email: userEmail,
-            picture: userPicture,
-            loginTime: Date.now()
-          }));
-
-          // Trocar telas
-          loginScreen.classList.add('hidden');
-          welcomeScreen.style.display = 'block';
-          errorDiv.classList.add('hidden');
-
-        } catch (error) {
-          console.error('❌ Erro no processamento:', error);
-          showError('Falha ao processar o login. Tente novamente.');
-        }
-      }
-
-      // ======== DECODIFICAR JWT ========
-      function parseJwt(token) {
-        try {
-          const base64Url = token.split('.')[1];
-          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-          const jsonPayload = decodeURIComponent(
-            atob(base64)
-              .split('')
-              .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-              .join('')
-          );
-          return JSON.parse(jsonPayload);
-        } catch (e) {
-          console.error('Erro ao decodificar JWT:', e);
-          return null;
-        }
-      }
-
-      // ======== LOGOUT ========
-      function logout() {
-        localStorage.removeItem('orkut_user');
-        
-        if (window.google && google.accounts) {
-          google.accounts.id.disableAutoSelect();
-        }
-        
-        welcomeScreen.style.display = 'none';
-        loginScreen.classList.remove('hidden');
-        
-        userAvatar.innerHTML = '';
-        userNameDisplay.textContent = '';
-        
-        console.log('👋 Logout realizado');
-        
-        // Reinicializar
-        setTimeout(() => {
-          if (window.google && google.accounts) {
-            google.accounts.id.initialize({
-              client_id: GOOGLE_CLIENT_ID,
-              callback: handleCredentialResponse,
-              auto_select: false,
-              login_uri: SITE_URL
-            });
-          }
-        }, 500);
-      }
-
-      // ======== EXIBIR ERRO ========
-      function showError(message) {
-        errorDiv.textContent = message;
-        errorDiv.classList.remove('hidden');
-        loadingIndicator.classList.add('hidden');
-      }
-
-      // ======== VERIFICAR SESSÃO EXISTENTE ========
-      function checkExistingSession() {
-        const savedUser = localStorage.getItem('orkut_user');
-        if (savedUser) {
-          try {
-            const user = JSON.parse(savedUser);
-            if (Date.now() - user.loginTime < 3600000) {
-              userNameDisplay.textContent = user.name;
-              if (user.picture) {
-                userAvatar.innerHTML = `<img src="${user.picture}" alt="Avatar" style="width:36px;height:36px;border-radius:50%;object-fit:cover;" draggable="false">`;
-              } else {
-                userAvatar.textContent = user.name.charAt(0).toUpperCase();
-              }
-              loginScreen.classList.add('hidden');
-              welcomeScreen.style.display = 'block';
-              return true;
-            }
-          } catch (e) {
-            localStorage.removeItem('orkut_user');
-          }
-        }
-        return false;
-      }
-
-      // ======== EVENT LISTENERS ========
-      logoutBtn.addEventListener('click', logout);
-
-      // Prevenir seleção de texto em todo o container
-      document.querySelector('.orkut-container').addEventListener('selectstart', function(e) {
-        e.preventDefault();
-      });
-
-      // ======== INICIAR ========
-      window.addEventListener('load', () => {
-        if (!checkExistingSession()) {
-          initGoogleAuth();
-        }
-      });
-
-    })();
-  </script>
 </body>
 </html>
